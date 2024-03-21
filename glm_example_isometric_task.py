@@ -207,7 +207,7 @@ moy_plateau_gf= []
 for i in range(len(crossings_indices_gf)//2):
     inter = crossings_indices_gf[2*i+1]-crossings_indices_gf[2*i]
     quart = inter//4
-    mean = np.mean(np.abs(LFv)[crossings_indices_gf[2*i]+quart:crossings_indices_gf[2*i+1]-quart])
+    mean = np.mean(GF[crossings_indices_gf[2*i]+quart:crossings_indices_gf[2*i+1]-quart])
     moy_plateau_gf.append(mean)
 print(moy_plateau_gf)
 
