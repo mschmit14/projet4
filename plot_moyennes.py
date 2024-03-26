@@ -8,6 +8,11 @@ from scipy.interpolate import make_interp_spline, BSpline
 # Import custom functions
 import signal_processing_toolbox as processing
 
+def get_var_name(var):
+    for name, value in globals().items():
+        if value is var:
+            return name
+        
 file_name = "moyenne.txt"
 
 ligne1 = []
@@ -43,7 +48,7 @@ Sophie_GF = [97,99,101,103,105,107,109,111]
 Sophie_entr_LF = [112,114,116,118,120,122,124,126]
 Sophie_entr_GF = [113,115,117,119,121,123,125,127]
 
-liste_utilisee = Victor_entr_GF
+liste_utilisee = Hugo_LF
 
 fig = plt.figure(figsize = [15,9])
 
@@ -110,5 +115,5 @@ for xs,val in zip(xs_up, up_tot):
     plt.scatter(xs, val, color='green')
 
 plt.grid()
-plt.title("il faut changer")
+plt.title(get_var_name(liste_utilisee))
 plt.show()
