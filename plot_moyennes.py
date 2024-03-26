@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 from scipy.interpolate import make_interp_spline, BSpline
+from IPython.display import display, Markdown as md
 
 
 # Import custom functions
@@ -14,6 +15,7 @@ def get_var_name(var):
             return name
         
 file_name = "moyenne.txt"
+data = "data.csv"
 
 ligne1 = []
 
@@ -23,6 +25,49 @@ up_tot = []
 
 with open(file_name, 'r') as fichier:
     lignes = fichier.readlines()
+
+df = pd.read_csv(data, sep=';')
+# display(df)
+
+#ajouter la colonne LF
+df['LF'] = 0
+df['GF'] = 0
+df['LF'] = df['LF'].apply(lambda x: [] if pd.isna(x) else x)
+df['GF'] = df['GF'].apply(lambda x: [] if pd.isna(x) else x)
+
+for i in range(16):
+    LF_init = lignes[2*i].strip().split()
+    GF_init = lignes[2*i+1].strip().split()
+
+    print(len(LF_init))
+
+    LF_post = [0]*len(LF_init)
+    print("LF_post : ", LF_post)
+    print("LF_init : ", LF_init)
+    print("LF_post size : ", len(LF_post))
+    print("LF_init size : ", len(LF_init))
+    GF_post = [0]*len(GF_init)
+    print("GF_post : ", GF_post)
+    print("GF_init : ", GF_init)
+    print("GF_post size : ", len(GF_post))
+    print("GF_init size : ", len(GF_init))
+
+    for j in range (len(LF_init)):
+        print("i'm here \n")
+        LF_post[j] = float(LF_init[j])
+        GF_post[j] = float(GF_init[j])
+
+    print("LF_post : ", LF_post)
+    print("LF_post size : ", len(LF_post))
+    print("GF_post : ", GF_post)
+    print("GF_post size : ", len(GF_post))
+
+    df.loc[i, 'LF'] = LF_post
+    df.loc[i, 'GF'] = GF_post
+
+# display(df)
+# print("LF : ", df['LF'][0])
+# print("GF : ", df['GF'][0])
 
 Victor_LF = [0,2,4,6,8,10,12,14]
 Victor_GF= [1,3,5,7,9,11,13,15]
