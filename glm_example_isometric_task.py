@@ -23,8 +23,7 @@ import signal_processing_toolbox as processing
 
 # File path
 data_dir = "./YOUR/DATA/DIRECTORY"
-file_name = "Lise_block50.txt"
-
+file_name = "Lise_friction_gant_final_block60.txt"
 # Import data from txt file
 #df = pd.read_csv(data_dir + file_name, sep = '\t', header = None)
 df = pd.read_csv(file_name, 
@@ -219,6 +218,34 @@ ax[3].set_ylabel("COP [mm]", fontsize=12)
 ax[3].legend(fontsize=12)
 ax[3].set_ylim([-20,20])
 ax[3].set_xlabel("Time [s]", fontsize=13)
+
+
+# Plot COP x and COP y positions
+plt.figure(figsize=[8, 8])
+plt.scatter(CPx_L*1000, CPz_L*1000, label="Index Finger COP", alpha=0.5)
+plt.scatter(CPx_R*1000, CPz_R*1000, label="Thumb COP", alpha=0.5)
+plt.xlabel('COP x Position [mm]', fontsize=12)
+plt.ylabel('COP y Position [mm]', fontsize=12)
+plt.title('COP Position', fontsize=14)
+plt.legend()
+plt.grid(True)
+plt.gca().set_aspect('equal', adjustable='box')  # Equal aspect ratio
+plt.show()
+
+# Calculate static friction coefficient
+CF_static = LF / GF
+
+# Plot static friction coefficient
+plt.figure(figsize=[10, 6])
+plt.plot(time, CF_static, color='b', label='Static Friction Coefficient')
+plt.xlabel('Time [s]', fontsize=12)
+plt.ylabel('Static Friction Coefficient', fontsize=12)
+plt.title('Static Friction Coefficient Over Time', fontsize=14)
+plt.legend()
+plt.grid(True)
+plt.show()
+
+
 
 plt.show()
         
