@@ -526,12 +526,12 @@ elif(partie == 3):
             plt.scatter(xs, val, color='red')
 
         #create box plots for the even indexes of the line
-        plt.boxplot(list_down_rep_dif, positions=[1],labels=['Bas différentes'])
+        plt.boxplot(list_down_rep_dif, positions=[2],labels=['Bas différentes'])
         for xs,val in zip(xs_down_rep_dif, list_down_rep_dif):
             plt.scatter(xs, val, color='red')
 
         #create box plots for the odd indexes of the line
-        plt.boxplot(list_up_rep_id, positions=[2],labels=['Haut identiques'])
+        plt.boxplot(list_up_rep_id, positions=[1],labels=['Haut identiques'])
         for xs,val in zip(xs_up_rep_id, list_up_rep_id):
             plt.scatter(xs, val, color='green')
 
