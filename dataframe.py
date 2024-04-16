@@ -17,7 +17,7 @@ print(df)
 
 nom = ['Victor', 'Lise', 'Sophie', 'Hugo']
 
-
+"""
 #comparer le up et down de la reproduction lf
 moyenne_question1 = []
 m_down_rep_a =[]
@@ -183,7 +183,7 @@ plt.legend()
 plt.ylim(3, 9)
 plt.ylabel('LF [N]')
 plt.xticks([1, 2, 3, 4], ['down avec gants', 'up avec gants', 'down sans gants', 'up avec gants'])
-plt.title("Moyenne LF reproduction")
+plt.title("Moyenne LF reproduction avec et sans gants")
 plt.show()
 
 
@@ -209,11 +209,12 @@ print(anova.summary())
 #on rejette l'hypothèse nulle et on conclut qu'il existe une différence statistiquement significative entre les moyennes des groupes.
 #direction : gants = interaction entre les deux variables
 # p-valeur = valeur de la dernière colonne 
-
+"""
 
 #comparer si reproduction et entrainement identique quand condition gant identique ou pas (et différencier up et down) lf
 
-#conditions identiques
+#conditions identiques 
+#pas d'analyse finalement  
 """
 for n in nom :
     fig = plt.figure(figsize = [15,9])
@@ -339,6 +340,7 @@ plt.show()
 """
 """
 #conditions différentes
+#pas d'analyse finalement
 for n in nom :
     fig = plt.figure(figsize = [15,9])
 
@@ -462,25 +464,46 @@ plt.show()
 
 
 #comparer si reproduction lf egale quand conditions ident et diff
-"""
+
+moyenne_question2 = []
+m_down_rep_id =[]
+m_up_rep_id =[]
+m_down_rep_dif =[]
+m_up_rep_dif =[]
+
 for n in nom :
     fig = plt.figure(figsize = [15,9])
+    moyenne = []
 
     down_rep_id = df[(df['nom'] == n )&( df['type']=='rep')&(df['force']=='lf')&(df['cond']=='id')].iloc[:, 5:17:2] #down conditions identiques reproduction
     down_rep_id = down_rep_id.dropna()
     list_down_rep_id = down_rep_id.values.flatten()
+    moyenne_down_rep_id = np.mean(list_down_rep_id)
+    moyenne.append(moyenne_down_rep_id)
+    m_down_rep_id.append(moyenne_down_rep_id)
 
     up_rep_id = df[(df['nom'] == n)&( df['type']=='rep')&(df['force']=='lf')&(df['cond']=='id')].iloc[:, 6:17:2] #up conditions identiques reproduction
     up_rep_id = up_rep_id.dropna()
     list_up_rep_id = up_rep_id.values.flatten()
+    moyenne_up_rep_id = np.mean(list_up_rep_id)
+    moyenne.append(moyenne_up_rep_id)
+    m_up_rep_id.append(moyenne_up_rep_id)
 
     down_rep_dif = df[(df['nom'] == n )&( df['type']=='rep')&(df['force']=='lf')&(df['cond']=='dif')].iloc[:, 5:17:2] #down conditions différentes reproduction
     down_rep_dif = down_rep_dif.dropna()
     list_down_rep_dif = down_rep_dif.values.flatten()
+    moyenne_down_rep_dif = np.mean(list_down_rep_dif)
+    moyenne.append(moyenne_down_rep_dif)
+    m_down_rep_dif.append(moyenne_down_rep_dif)
 
     up_rep_dif = df[(df['nom'] == n)&( df['type']=='rep')&(df['force']=='lf')&(df['cond']=='dif')].iloc[:, 6:17:2] #up conditions différentes reproduction
     up_rep_dif = up_rep_dif.dropna()
     list_up_rep_dif = up_rep_dif.values.flatten()
+    moyenne_up_rep_dif = np.mean(list_up_rep_dif)
+    moyenne.append(moyenne_up_rep_dif)
+    m_up_rep_dif.append(moyenne_up_rep_dif)
+
+    moyenne_question2.append(moyenne)
 
     xs_down_rep_id = []
     for i in range(len(list_down_rep_id)):
@@ -581,9 +604,55 @@ for xs,val in zip(xs_up_rep_dif, list_up_rep_dif):
     plt.scatter(xs, val, color='green')
 
 plt.grid()
-plt.title(n +" LF rep conditions ident et diff")
+plt.title("global LF rep conditions ident et diff")
 plt.show()
-"""
+
+
+x = [1,2,3,4]
+m =[]
+for i in range (4):
+    moyenne = (moyenne_question2[0][i] + moyenne_question2[1][i] + moyenne_question2[2][i] + moyenne_question2[3][i])/4
+    m.append(moyenne)
+error_down_rep_id = np.std(m_down_rep_id, ddof=1) / np.sqrt(len(m_down_rep_id))
+error_up_rep_id = np.std(m_up_rep_id, ddof=1) / np.sqrt(len(m_up_rep_id))
+error_down_rep_dif = np.std(m_down_rep_dif, ddof=1) / np.sqrt(len(m_down_rep_dif))
+error_up_rep_dif = np.std(m_up_rep_dif, ddof=1) / np.sqrt(len(m_up_rep_dif))
+
+plt.scatter(x, moyenne_question2[0], color='red', label='Victor')
+plt.scatter(x, moyenne_question2[1], color='blue', label='Lise')
+plt.scatter(x, moyenne_question2[2], color='green', label='Sophie')
+plt.scatter(x, moyenne_question2[3], color='orange', label='Hugo')
+plt.scatter(x, m, color='black', label='Moyenne totale')
+plt.errorbar(1, m[0], yerr=error_down_rep_id, fmt='o', capsize=5, color='black', label='Erreur standard')
+plt.errorbar(2, m[1], yerr=error_up_rep_id, fmt='o', capsize=5, color='black')
+plt.errorbar(3, m[2], yerr=error_down_rep_dif, fmt='o', capsize=5, color='black')
+plt.errorbar(4, m[3], yerr=error_up_rep_dif, fmt='o', capsize=5, color='black')
+plt.legend()
+plt.ylim(3, 9)
+plt.ylabel('LF [N]')
+plt.xticks([1, 2, 3, 4], ['down cond ident', 'up cond ident', 'down cond diff', 'up cond diff'])
+plt.title("Moyenne LF reproduction conditions ident et diff")
+plt.show()
+
+
+# Créer un DataFrame avec les données
+datatest = pd.DataFrame({
+    'Force': m_down_rep_id + m_up_rep_id + m_down_rep_dif + m_up_rep_dif,  
+    'Participant': nom * 4,
+    'Direction': ['down'] * 4 + ['up'] * 4 + ['down'] * 4 + ['up'] * 4,
+    'Condition': ['id'] * 8  + ['dif'] * 8
+})
+
+# Convertir les variables 'Direction', 'Gants' et 'Participant' en variables catégoriques
+datatest['Direction'] = pd.Categorical(datatest['Direction'])
+datatest['Condition'] = pd.Categorical(datatest['Condition'])
+datatest['Participant'] = pd.Categorical(datatest['Participant'])
+
+# Effectuer l'ANOVA à mesures répétées
+anova = AnovaRM(datatest, 'Force', 'Participant', within=['Direction', 'Condition'], aggregate_func='mean').fit()
+
+# Afficher les résultats de l'ANOVA à mesures répétées
+print(anova.summary())
 
 """
 #comparer les rapports grip force et load force avec et sans gants (et différencier up et down)
