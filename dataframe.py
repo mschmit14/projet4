@@ -528,12 +528,12 @@ for n in nom :
         plt.scatter(xs, val, color='red')
 
     #create box plots for the even indexes of the line
-    plt.boxplot(list_down_rep_dif, positions=[1],labels=['down rep dif'])
+    plt.boxplot(list_down_rep_dif, positions=[2],labels=['down rep dif'])
     for xs,val in zip(xs_down_rep_dif, list_down_rep_dif):
         plt.scatter(xs, val, color='red')
 
     #create box plots for the odd indexes of the line
-    plt.boxplot(list_up_rep_id, positions=[2],labels=['up rep id'])
+    plt.boxplot(list_up_rep_id, positions=[1],labels=['up rep id'])
     for xs,val in zip(xs_up_rep_id, list_up_rep_id):
         plt.scatter(xs, val, color='green')
 
@@ -589,12 +589,12 @@ for xs,val in zip(xs_down_rep_id, list_down_rep_id):
     plt.scatter(xs, val, color='red')
 
 #create box plots for the even indexes of the line
-plt.boxplot(list_down_rep_dif, positions=[1],labels=['down rep dif'])
+plt.boxplot(list_down_rep_dif, positions=[2],labels=['down rep dif'])
 for xs,val in zip(xs_down_rep_dif, list_down_rep_dif):
     plt.scatter(xs, val, color='red')
 
 #create box plots for the odd indexes of the line
-plt.boxplot(list_up_rep_id, positions=[2],labels=['up rep id'])
+plt.boxplot(list_up_rep_id, positions=[1],labels=['up rep id'])
 for xs,val in zip(xs_up_rep_id, list_up_rep_id):
     plt.scatter(xs, val, color='green')
 
