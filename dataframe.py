@@ -1,6 +1,9 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from statsmodels.stats.anova import AnovaRM
+
+
 
 # Chemin vers votre fichier texte
 chemin_fichier = "data.txt"
@@ -14,79 +17,199 @@ print(df)
 
 nom = ['Victor', 'Lise', 'Sophie', 'Hugo']
 
-"""
-#comparer le up et down de la reproduction lf
 
+#comparer le up et down de la reproduction lf
+moyenne_question1 = []
+m_down_rep_a =[]
+m_up_rep_a =[]
+m_down_rep_s =[]
+m_up_rep_s =[]
 for n in nom :
+    moyenne = []
     fig = plt.figure(figsize = [15,9])
     
-    down_rep = df[(df['nom'] == n )&( df['type']=='rep')&(df['force']=='lf')].iloc[:, 5:17:2] #down
-    down_rep = down_rep.dropna()
-    list_down_rep = down_rep.values.flatten()
+    down_rep_a = df[(df['nom'] == n )&( df['type']=='rep')&(df['force']=='lf')&(df['gant']=='a')].iloc[:, 5:17:2] #down avec gants
+    down_rep_a = down_rep_a.dropna()
+    list_down_rep_a = down_rep_a.values.flatten()
+    moyenne_down_rep_a = np.mean(list_down_rep_a)
+    moyenne.append(moyenne_down_rep_a)
+    m_down_rep_a.append(moyenne_down_rep_a)
 
-    up_rep = df[(df['nom'] == n )&( df['type']=='rep')&(df['force']=='lf')].iloc[:, 6:17:2] #up
-    up_rep = up_rep.dropna()
-    list_up_rep = up_rep.values.flatten()
+    up_rep_a = df[(df['nom'] == n )&( df['type']=='rep')&(df['force']=='lf')&(df['gant']=='a')].iloc[:, 6:17:2] #up avec gants
+    up_rep_a = up_rep_a.dropna()
+    list_up_rep_a = up_rep_a.values.flatten()
+    moyenne_up_rep_a = np.mean(list_up_rep_a)
+    moyenne.append(moyenne_up_rep_a)
+    m_up_rep_a.append(moyenne_up_rep_a)
+
+    down_rep_s = df[(df['nom'] == n )&( df['type']=='rep')&(df['force']=='lf')&(df['gant']=='s')].iloc[:, 5:17:2] #down sans gants
+    down_rep_s = down_rep_a.dropna()
+    list_down_rep_s = down_rep_s.values.flatten()
+    moyenne_down_rep_s = np.mean(list_down_rep_s)
+    moyenne.append(moyenne_down_rep_s)
+    m_down_rep_s.append(moyenne_down_rep_s)
+
+    up_rep_s = df[(df['nom'] == n )&( df['type']=='rep')&(df['force']=='lf')&(df['gant']=='s')].iloc[:, 6:17:2] #up sans gants
+    up_rep_s = up_rep_s.dropna()
+    list_up_rep_s = up_rep_s.values.flatten()
+    moyenne_up_rep_s = np.mean(list_up_rep_s)
+    moyenne.append(moyenne_up_rep_s)
+    m_up_rep_s.append(moyenne_up_rep_s)
+
+    moyenne_question1.append(moyenne)
 
 
-    xs_down_rep = []
-    for i in range(len(list_down_rep)):
-        xs_down_rep.append(np.random.normal((i+1)*10e-20,0.02))
+    xs_down_rep_a = []
+    for i in range(len(list_down_rep_a)):
+        xs_down_rep_a.append(np.random.normal((i+1)*10e-20,0.02))
 
-    xs_up_rep = []
-    for i in range(len(list_up_rep)):
-        xs_up_rep.append(np.random.normal((i+1)*10e-20 +1,0.02))
+    xs_up_rep_a = []
+    for i in range(len(list_up_rep_a)):
+        xs_up_rep_a.append(np.random.normal((i+1)*10e-20 +2,0.02))
+
+    xs_down_rep_s = []
+    for i in range(len(list_down_rep_s)):
+        xs_down_rep_s.append(np.random.normal((i+1)*10e-20+1,0.02))
+
+    xs_up_rep_s = []
+    for i in range(len(list_up_rep_s)):
+        xs_up_rep_s.append(np.random.normal((i+1)*10e-20 +3,0.02))
 
     #create box plots for the even indexes of the line
-    plt.boxplot(list_down_rep, positions=[0],labels=['down'])
-    for xs,val in zip(xs_down_rep, list_down_rep):
+    plt.boxplot(list_down_rep_a, positions=[0],labels=['down avec gants'])
+    for xs,val in zip(xs_down_rep_a, list_down_rep_a):
         plt.scatter(xs, val, color='red')
 
     #create box plots for the odd indexes of the line
-    plt.boxplot(list_up_rep, positions=[1],labels=['up'])
-    for xs,val in zip(xs_up_rep,list_up_rep):
+    plt.boxplot(list_up_rep_a, positions=[2],labels=['up avec gants'])
+    for xs,val in zip(xs_up_rep_a,list_up_rep_a):
+        plt.scatter(xs, val, color='green')
+    
+    #create box plots for the even indexes of the line
+    plt.boxplot(list_down_rep_s, positions=[1],labels=['down sans gants'])
+    for xs,val in zip(xs_down_rep_s, list_down_rep_s):
+        plt.scatter(xs, val, color='red')
+
+    #create box plots for the odd indexes of the line
+    plt.boxplot(list_up_rep_s, positions=[3],labels=['up sans gants'])
+    for xs,val in zip(xs_up_rep_s,list_up_rep_s):
         plt.scatter(xs, val, color='green')
 
     plt.grid()
     plt.title(n+" LF reproduction")
     plt.show()
 
-
 ##global##
-
 fig = plt.figure(figsize = [15,9])
+    
+down_rep_a = df[( df['type']=='rep')&(df['force']=='lf')&(df['gant']=='a')].iloc[:, 5:17:2] #down avec gants
+down_rep_a = down_rep_a.dropna()
+list_down_rep_a = down_rep_a.values.flatten()
 
-downg = df[( df['type']=='rep')&(df['force']=='lf')].iloc[:, 5:17:2] #down
-downg = downg.dropna()
-list_downg = downg.values.flatten()
+up_rep_a = df[(df['type']=='rep')&(df['force']=='lf')&(df['gant']=='a')].iloc[:, 6:17:2] #up avec gants
+up_rep_a = up_rep_a.dropna()
+list_up_rep_a = up_rep_a.values.flatten()
 
-upg = df[( df['type']=='rep')&(df['force']=='lf')].iloc[:, 6:17:2] #up
-upg = upg.dropna()
-list_upg = upg.values.flatten()
+down_rep_s = df[( df['type']=='rep')&(df['force']=='lf')&(df['gant']=='s')].iloc[:, 5:17:2] #down sans gants
+down_rep_s = down_rep_a.dropna()
+list_down_rep_s = down_rep_s.values.flatten()
+
+up_rep_s = df[( df['type']=='rep')&(df['force']=='lf')&(df['gant']=='s')].iloc[:, 6:17:2] #up sans gants
+up_rep_s = up_rep_s.dropna()
+list_up_rep_s = up_rep_s.values.flatten()
 
 
-xs_downg = []
-for i in range(len(list_downg)):
-    xs_downg.append(np.random.normal((i+1)*10e-20,0.02))
 
-xs_upg = []
-for i in range(len(list_upg)):
-    xs_upg.append(np.random.normal((i+1)*10e-20 +1,0.02))
+xs_down_rep_a = []
+for i in range(len(list_down_rep_a)):
+    xs_down_rep_a.append(np.random.normal((i+1)*10e-20,0.02))
+
+xs_up_rep_a = []
+for i in range(len(list_up_rep_a)):
+    xs_up_rep_a.append(np.random.normal((i+1)*10e-20 +2,0.02))
+
+xs_down_rep_s = []
+for i in range(len(list_down_rep_s)):
+    xs_down_rep_s.append(np.random.normal((i+1)*10e-20+1,0.02))
+
+xs_up_rep_s = []
+for i in range(len(list_up_rep_s)):
+    xs_up_rep_s.append(np.random.normal((i+1)*10e-20 +3,0.02))
 
 #create box plots for the even indexes of the line
-plt.boxplot(list_downg, positions=[0],labels=['down'])
-for xs,val in zip(xs_downg, list_downg):
+plt.boxplot(list_down_rep_a, positions=[0],labels=['down avec gants'])
+for xs,val in zip(xs_down_rep_a, list_down_rep_a):
     plt.scatter(xs, val, color='red')
 
 #create box plots for the odd indexes of the line
-plt.boxplot(list_upg, positions=[1],labels=['up'])
-for xs,val in zip(xs_upg,list_upg):
+plt.boxplot(list_up_rep_a, positions=[2],labels=['up avec gants'])
+for xs,val in zip(xs_up_rep_a,list_up_rep_a):
+    plt.scatter(xs, val, color='green')
+
+#create box plots for the even indexes of the line
+plt.boxplot(list_down_rep_s, positions=[1],labels=['down sans gants'])
+for xs,val in zip(xs_down_rep_s, list_down_rep_s):
+    plt.scatter(xs, val, color='red')
+
+#create box plots for the odd indexes of the line
+plt.boxplot(list_up_rep_s, positions=[3],labels=['up sans gants'])
+for xs,val in zip(xs_up_rep_s,list_up_rep_s):
     plt.scatter(xs, val, color='green')
 
 plt.grid()
-plt.title("Global LF reproduction")
+plt.title("global LF reproduction")
 plt.show()
-"""
+
+x = [1,2,3,4]
+m =[]
+for i in range (4):
+    moyenne = (moyenne_question1[0][i] + moyenne_question1[1][i] + moyenne_question1[2][i] + moyenne_question1[3][i])/4
+    m.append(moyenne)
+error_down_rep_a = np.std(m_down_rep_a, ddof=1) / np.sqrt(len(m_down_rep_a))
+error_up_rep_a = np.std(m_up_rep_a, ddof=1) / np.sqrt(len(m_up_rep_a))
+error_down_rep_s = np.std(m_down_rep_s, ddof=1) / np.sqrt(len(m_down_rep_s))
+error_up_rep_s = np.std(m_up_rep_s, ddof=1) / np.sqrt(len(m_up_rep_s))
+
+plt.scatter(x, moyenne_question1[0], color='red', label='Victor')
+plt.scatter(x, moyenne_question1[1], color='blue', label='Lise')
+plt.scatter(x, moyenne_question1[2], color='green', label='Sophie')
+plt.scatter(x, moyenne_question1[3], color='orange', label='Hugo')
+plt.scatter(x, m, color='black', label='Moyenne totale')
+plt.errorbar(1, m[0], yerr=error_down_rep_a, fmt='o', capsize=5, color='black', label='Erreur standard')
+plt.errorbar(2, m[1], yerr=error_up_rep_a, fmt='o', capsize=5, color='black')
+plt.errorbar(3, m[2], yerr=error_down_rep_s, fmt='o', capsize=5, color='black')
+plt.errorbar(4, m[3], yerr=error_up_rep_s, fmt='o', capsize=5, color='black')
+plt.legend()
+plt.ylim(3, 9)
+plt.ylabel('LF [N]')
+plt.xticks([1, 2, 3, 4], ['down avec gants', 'up avec gants', 'down sans gants', 'up avec gants'])
+plt.title("Moyenne LF reproduction")
+plt.show()
+
+
+# Créer un DataFrame avec les données
+datatest = pd.DataFrame({
+    'Force': m_down_rep_a + m_up_rep_a + m_down_rep_s + m_up_rep_s,  
+    'Participant': nom * 4,
+    'Direction': ['down'] * 4 + ['up'] * 4 + ['down'] * 4 + ['up'] * 4,
+    'Gants': ['Oui'] * 8  + ['Non'] * 8
+})
+
+# Convertir les variables 'Direction', 'Gants' et 'Participant' en variables catégoriques
+datatest['Direction'] = pd.Categorical(datatest['Direction'])
+datatest['Gants'] = pd.Categorical(datatest['Gants'])
+datatest['Participant'] = pd.Categorical(datatest['Participant'])
+
+# Effectuer l'ANOVA à mesures répétées
+anova = AnovaRM(datatest, 'Force', 'Participant', within=['Direction', 'Gants'], aggregate_func='mean').fit()
+
+# Afficher les résultats de l'ANOVA à mesures répétées
+print(anova.summary())
+#Si la valeur p associée à la statistique de test F est inférieure à un seuil spécifié (généralement 0,05),
+#on rejette l'hypothèse nulle et on conclut qu'il existe une différence statistiquement significative entre les moyennes des groupes.
+#direction : gants = interaction entre les deux variables
+# p-valeur = valeur de la dernière colonne 
+
 
 #comparer si reproduction et entrainement identique quand condition gant identique ou pas (et différencier up et down) lf
 
@@ -462,6 +585,7 @@ plt.title(n +" LF rep conditions ident et diff")
 plt.show()
 """
 
+"""
 #comparer les rapports grip force et load force avec et sans gants (et différencier up et down)
 #LF<=GF*µ -> on va regarder µ*GF/LF
 
@@ -562,4 +686,4 @@ for n in nom :
     plt.title(n +" rapport LF et GF avec et sans gants")
     plt.show()
 
-#fait on un général ou pas ? vu que les coefficients de frottement sont différents pour chaque personne -> ou on fait une moyenne ??
+"""
