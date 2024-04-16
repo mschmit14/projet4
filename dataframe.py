@@ -76,27 +76,27 @@ for n in nom :
         xs_up_rep_s.append(np.random.normal((i+1)*10e-20 +3,0.02))
 
     #create box plots for the even indexes of the line
-    plt.boxplot(list_down_rep_a, positions=[0],labels=['down avec gants'])
+    plt.boxplot(list_down_rep_a, positions=[0],labels=['bas avec gants'])
     for xs,val in zip(xs_down_rep_a, list_down_rep_a):
         plt.scatter(xs, val, color='red')
 
     #create box plots for the odd indexes of the line
-    plt.boxplot(list_up_rep_a, positions=[2],labels=['up avec gants'])
+    plt.boxplot(list_up_rep_a, positions=[2],labels=['haut avec gants'])
     for xs,val in zip(xs_up_rep_a,list_up_rep_a):
         plt.scatter(xs, val, color='green')
     
     #create box plots for the even indexes of the line
-    plt.boxplot(list_down_rep_s, positions=[1],labels=['down sans gants'])
+    plt.boxplot(list_down_rep_s, positions=[1],labels=['bas sans gants'])
     for xs,val in zip(xs_down_rep_s, list_down_rep_s):
         plt.scatter(xs, val, color='red')
 
     #create box plots for the odd indexes of the line
-    plt.boxplot(list_up_rep_s, positions=[3],labels=['up sans gants'])
+    plt.boxplot(list_up_rep_s, positions=[3],labels=['haut sans gants'])
     for xs,val in zip(xs_up_rep_s,list_up_rep_s):
         plt.scatter(xs, val, color='green')
 
     plt.grid()
-    plt.title(n+" LF reproduction")
+    plt.title(n+" load force : reproduction")
     plt.show()
 
 ##global##
@@ -137,27 +137,27 @@ for i in range(len(list_up_rep_s)):
     xs_up_rep_s.append(np.random.normal((i+1)*10e-20 +3,0.02))
 
 #create box plots for the even indexes of the line
-plt.boxplot(list_down_rep_a, positions=[0],labels=['down avec gants'])
+plt.boxplot(list_down_rep_a, positions=[0],labels=['bas avec gants'])
 for xs,val in zip(xs_down_rep_a, list_down_rep_a):
     plt.scatter(xs, val, color='red')
 
 #create box plots for the odd indexes of the line
-plt.boxplot(list_up_rep_a, positions=[2],labels=['up avec gants'])
+plt.boxplot(list_up_rep_a, positions=[2],labels=['haut avec gants'])
 for xs,val in zip(xs_up_rep_a,list_up_rep_a):
     plt.scatter(xs, val, color='green')
 
 #create box plots for the even indexes of the line
-plt.boxplot(list_down_rep_s, positions=[1],labels=['down sans gants'])
+plt.boxplot(list_down_rep_s, positions=[1],labels=['bas sans gants'])
 for xs,val in zip(xs_down_rep_s, list_down_rep_s):
     plt.scatter(xs, val, color='red')
 
 #create box plots for the odd indexes of the line
-plt.boxplot(list_up_rep_s, positions=[3],labels=['up sans gants'])
+plt.boxplot(list_up_rep_s, positions=[3],labels=['haut sans gants'])
 for xs,val in zip(xs_up_rep_s,list_up_rep_s):
     plt.scatter(xs, val, color='green')
 
 plt.grid()
-plt.title("global LF reproduction")
+plt.title("Load force reproduction globale")
 plt.show()
 
 x = [1,2,3,4]
@@ -182,8 +182,8 @@ plt.errorbar(4, m[3], yerr=error_up_rep_s, fmt='o', capsize=5, color='black')
 plt.legend()
 plt.ylim(3, 9)
 plt.ylabel('LF [N]')
-plt.xticks([1, 2, 3, 4], ['down avec gants', 'up avec gants', 'down sans gants', 'up avec gants'])
-plt.title("Moyenne LF reproduction")
+plt.xticks([1, 2, 3, 4], ['bas avec gants', 'haut avec gants', 'bas sans gants', 'haut avec gants'])
+plt.title("Load force reproduction : moyenne")
 plt.show()
 
 
