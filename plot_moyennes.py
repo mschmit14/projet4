@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 from scipy.interpolate import make_interp_spline, BSpline
-from IPython.display import display, Markdown as md
+#from IPython.display import display, Markdown as md
 
 
 # Import custom functions
