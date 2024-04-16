@@ -65,11 +65,11 @@ for n in nom :
 
     xs_up_rep_a = []
     for i in range(len(list_up_rep_a)):
-        xs_up_rep_a.append(np.random.normal((i+1)*10e-20 +2,0.02))
+        xs_up_rep_a.append(np.random.normal((i+1)*10e-20 +1,0.02))
 
     xs_down_rep_s = []
     for i in range(len(list_down_rep_s)):
-        xs_down_rep_s.append(np.random.normal((i+1)*10e-20+1,0.02))
+        xs_down_rep_s.append(np.random.normal((i+1)*10e-20+2,0.02))
 
     xs_up_rep_s = []
     for i in range(len(list_up_rep_s)):
@@ -81,12 +81,12 @@ for n in nom :
         plt.scatter(xs, val, color='red')
 
     #create box plots for the odd indexes of the line
-    plt.boxplot(list_up_rep_a, positions=[2],labels=['up avec gants'])
+    plt.boxplot(list_up_rep_a, positions=[1],labels=['up avec gants'])
     for xs,val in zip(xs_up_rep_a,list_up_rep_a):
         plt.scatter(xs, val, color='green')
     
     #create box plots for the even indexes of the line
-    plt.boxplot(list_down_rep_s, positions=[1],labels=['down sans gants'])
+    plt.boxplot(list_down_rep_s, positions=[2],labels=['down sans gants'])
     for xs,val in zip(xs_down_rep_s, list_down_rep_s):
         plt.scatter(xs, val, color='red')
 
@@ -126,11 +126,11 @@ for i in range(len(list_down_rep_a)):
 
 xs_up_rep_a = []
 for i in range(len(list_up_rep_a)):
-    xs_up_rep_a.append(np.random.normal((i+1)*10e-20 +2,0.02))
+    xs_up_rep_a.append(np.random.normal((i+1)*10e-20 +1,0.02))
 
 xs_down_rep_s = []
 for i in range(len(list_down_rep_s)):
-    xs_down_rep_s.append(np.random.normal((i+1)*10e-20+1,0.02))
+    xs_down_rep_s.append(np.random.normal((i+1)*10e-20+2,0.02))
 
 xs_up_rep_s = []
 for i in range(len(list_up_rep_s)):
@@ -142,12 +142,12 @@ for xs,val in zip(xs_down_rep_a, list_down_rep_a):
     plt.scatter(xs, val, color='red')
 
 #create box plots for the odd indexes of the line
-plt.boxplot(list_up_rep_a, positions=[2],labels=['up avec gants'])
+plt.boxplot(list_up_rep_a, positions=[1],labels=['up avec gants'])
 for xs,val in zip(xs_up_rep_a,list_up_rep_a):
     plt.scatter(xs, val, color='green')
 
 #create box plots for the even indexes of the line
-plt.boxplot(list_down_rep_s, positions=[1],labels=['down sans gants'])
+plt.boxplot(list_down_rep_s, positions=[2],labels=['down sans gants'])
 for xs,val in zip(xs_down_rep_s, list_down_rep_s):
     plt.scatter(xs, val, color='red')
 
@@ -464,7 +464,7 @@ plt.show()
 
 
 #comparer si reproduction lf egale quand conditions ident et diff
-
+"""
 moyenne_question2 = []
 m_down_rep_id =[]
 m_up_rep_id =[]
@@ -511,11 +511,11 @@ for n in nom :
 
     xs_up_rep_id = []
     for i in range(len(list_up_rep_id)):
-        xs_up_rep_id.append(np.random.normal((i+1)*10e-20+2,0.02))
+        xs_up_rep_id.append(np.random.normal((i+1)*10e-20+1,0.02))
 
     xs_down_rep_dif = []
     for i in range(len(list_down_rep_dif)):
-        xs_down_rep_dif.append(np.random.normal((i+1)*10e-20+1,0.02))
+        xs_down_rep_dif.append(np.random.normal((i+1)*10e-20+2,0.02))
 
     xs_up_rep_dif= []
     for i in range(len(list_up_rep_dif)):
@@ -572,11 +572,11 @@ for i in range(len(list_down_rep_id)):
 
 xs_up_rep_id = []
 for i in range(len(list_up_rep_id)):
-    xs_up_rep_id.append(np.random.normal((i+1)*10e-20+2,0.02))
+    xs_up_rep_id.append(np.random.normal((i+1)*10e-20+1,0.02))
 
 xs_down_rep_dif = []
 for i in range(len(list_down_rep_dif)):
-    xs_down_rep_dif.append(np.random.normal((i+1)*10e-20+1,0.02))
+    xs_down_rep_dif.append(np.random.normal((i+1)*10e-20+2,0.02))
 
 xs_up_rep_dif= []
 for i in range(len(list_up_rep_dif)):
@@ -657,6 +657,13 @@ print(anova.summary())
 """
 #comparer les rapports grip force et load force avec et sans gants (et différencier up et down)
 #LF<=GF*µ -> on va regarder µ*GF/LF
+
+
+moyenne_question3 = []
+m_down_rep_id =[]
+m_up_rep_id =[]
+m_down_rep_dif =[]
+m_up_rep_dif =[]
 
 for n in nom :
     fig = plt.figure(figsize = [15,9])
@@ -755,4 +762,3 @@ for n in nom :
     plt.title(n +" rapport LF et GF avec et sans gants")
     plt.show()
 
-"""
