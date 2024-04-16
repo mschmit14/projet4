@@ -23,7 +23,7 @@ import signal_processing_toolbox as processing
 
 # File path
 data_dir = "./YOUR/DATA/DIRECTORY"
-file_name = "Lise_friction_gant_final_block60.txt"
+file_name = "Hugo_friction_gant_block9.txt"
 # Import data from txt file
 #df = pd.read_csv(data_dir + file_name, sep = '\t', header = None)
 df = pd.read_csv(file_name, 
@@ -214,10 +214,169 @@ print(moy_plateau_gf)
 # Centers of pressure
 ax[3].plot(time, CPx_L*1000, label="Index")
 ax[3].plot(time, CPx_R*1000, label="Thumb")
+ax[3].axhline(y=0, color='g', linestyle='--', linewidth=1)
 ax[3].set_ylabel("COP [mm]", fontsize=12)
 ax[3].legend(fontsize=12)
 ax[3].set_ylim([-20,20])
 ax[3].set_xlabel("Time [s]", fontsize=13)
+
+
+#Threshold suffisamment élevé pour que l'on considère qu'il y ait un glissement
+ax[3].axhline(y=2.5, color='b',linestyle='--', linewidth=1) 
+ax[3].axhline(y=-2.5, color='b',linestyle='--', linewidth=1) 
+
+#Calcul des pics (extremums) pour l'index:
+from scipy.signal import find_peaks
+
+# Définition de la longueur de l'intervalle
+interval_length = 2.16  # en secondes
+
+# Initialisation du temps de début de l'intervalle
+interval_start_time = 0
+
+# Initialisation des variables pour suivre les pics les plus élevés et les plus bas
+max_peak_value = -float('inf')
+min_peak_value = float('inf')
+
+# Initialisation des listes pour stocker les temps et valeurs correspondant aux pics les plus élevés et les plus bas
+max_peak_times = []
+max_peak_values = []
+min_peak_times = []
+min_peak_values = []
+
+# Boucle pour chaque intervalle jusqu'à 40 secondes
+while interval_start_time < 40:
+    # Calcul du temps de fin de l'intervalle
+    interval_end_time = interval_start_time + interval_length
+    
+    # Sélection des indices correspondant à l'intervalle de temps actuel
+    interval_indices = np.where((time >= interval_start_time) & (time < interval_end_time))[0]
+    
+    # Extraction des données de COP pour l'index dans l'intervalle de temps actuel
+    interval_time = time[interval_indices]
+    interval_COP_index = CPx_L[interval_indices]
+    
+    # Recherche des pics dans l'intervalle de temps actuel
+    peaks_index, _ = find_peaks(interval_COP_index)
+    
+    # Si des pics sont trouvés dans l'intervalle
+    if len(peaks_index) > 0:
+        # Trouver la valeur la plus élevée parmi les pics dans l'intervalle
+        max_peak_idx = np.argmax(interval_COP_index[peaks_index])
+        max_peak_time = interval_time[peaks_index[max_peak_idx]]
+        max_peak_value = interval_COP_index[peaks_index[max_peak_idx]] * 1000  # Conversion en millimètres
+        
+        # Si cette valeur est plus élevée que la valeur précédente, la mettre à jour
+        if max_peak_value > min_peak_value:
+            max_peak_times.append(max_peak_time)
+            max_peak_values.append(max_peak_value)
+            min_peak_value = max_peak_value
+    
+    # Si des pics négatifs sont trouvés dans l'intervalle
+    if len(peaks_index) > 0:
+        # Trouver la valeur la plus basse parmi les pics négatifs dans l'intervalle
+        min_peak_idx = np.argmin(interval_COP_index[peaks_index])
+        min_peak_time = interval_time[peaks_index[min_peak_idx]]
+        min_peak_value = interval_COP_index[peaks_index[min_peak_idx]] * 1000  # Conversion en millimètres
+        
+        # Si cette valeur est plus basse que la valeur précédente, la mettre à jour
+        if min_peak_value < max_peak_value:
+            min_peak_times.append(min_peak_time)
+            min_peak_values.append(min_peak_value)
+            max_peak_value = min_peak_value
+
+    # Mise à jour du temps de début pour le prochain intervalle
+    interval_start_time += interval_length
+
+# Affichage des valeurs des pics les plus élevés et les plus bas dans chaque intervalle
+print("Valeurs des pics les plus élevés dans chaque intervalle pour l'index (en mm):")
+for i in range(len(max_peak_times)):
+    print("Pic le plus élevé", i+1, "- Temps :", max_peak_times[i], "s, COP :", max_peak_values[i], "mm")
+
+print("\nValeurs des pics les plus bas dans chaque intervalle pour l'index (en mm):")
+for i in range(len(min_peak_times)):
+    print("Pic le plus bas", i+1, "- Temps :", min_peak_times[i], "s, COP :", min_peak_values[i], "mm")
+
+#Calcul des pics (extremums) pour le thumb:
+from scipy.signal import find_peaks
+
+# Définition de la longueur de l'intervalle
+interval_length = 2.16  # en secondes
+
+# Initialisation du temps de début de l'intervalle
+interval_start_time = 0
+
+# Initialisation des variables pour suivre les pics les plus élevés et les plus bas
+max_peak_value = -float('inf')
+min_peak_value = float('inf')
+
+# Initialisation des listes pour stocker les temps et valeurs correspondant aux pics les plus élevés et les plus bas
+max_peak_times = []
+max_peak_values = []
+min_peak_times = []
+min_peak_values = []
+
+# Boucle pour chaque intervalle jusqu'à 40 secondes
+while interval_start_time < 40:
+    # Calcul du temps de fin de l'intervalle
+    interval_end_time = interval_start_time + interval_length
+    
+    # Sélection des indices correspondant à l'intervalle de temps actuel
+    interval_indices = np.where((time >= interval_start_time) & (time < interval_end_time))[0]
+    
+    # Extraction des données de COP pour le pouce dans l'intervalle de temps actuel
+    interval_time = time[interval_indices]
+    interval_COP_thumb = CPx_R[interval_indices]  # CPx_R pour le pouce
+    
+    # Recherche des pics dans l'intervalle de temps actuel
+    peaks_index, _ = find_peaks(interval_COP_thumb)
+    
+    # Si des pics sont trouvés dans l'intervalle
+    if len(peaks_index) > 0:
+        # Trouver la valeur la plus élevée parmi les pics dans l'intervalle
+        max_peak_idx = np.argmax(interval_COP_thumb[peaks_index])
+        max_peak_time = interval_time[peaks_index[max_peak_idx]]
+        max_peak_value = interval_COP_thumb[peaks_index[max_peak_idx]] * 1000  # Conversion en millimètres
+        
+        # Si cette valeur est plus élevée que la valeur précédente, la mettre à jour
+        if max_peak_value > min_peak_value:
+            max_peak_times.append(max_peak_time)
+            max_peak_values.append(max_peak_value)
+            min_peak_value = max_peak_value
+    
+    # Si des pics négatifs sont trouvés dans l'intervalle
+    if len(peaks_index) > 0:
+        # Trouver la valeur la plus basse parmi les pics négatifs dans l'intervalle
+        min_peak_idx = np.argmin(interval_COP_thumb[peaks_index])
+        min_peak_time = interval_time[peaks_index[min_peak_idx]]
+        min_peak_value = interval_COP_thumb[peaks_index[min_peak_idx]] * 1000  # Conversion en millimètres
+        
+        # Si cette valeur est plus basse que la valeur précédente, la mettre à jour
+        if min_peak_value < max_peak_value:
+            min_peak_times.append(min_peak_time)
+            min_peak_values.append(min_peak_value)
+            max_peak_value = min_peak_value
+
+    # Mise à jour du temps de début pour le prochain intervalle
+    interval_start_time += interval_length
+
+# Affichage des valeurs des pics les plus élevés et les plus bas dans chaque intervalle
+print("\nValeurs des pics les plus élevés dans chaque intervalle pour le pouce (en mm) :")
+for i in range(len(max_peak_times)):
+    print("Pic le plus élevé", i+1, "- Temps :", max_peak_times[i], "s, COP :", max_peak_values[i], "mm")
+
+print("\nValeurs des pics les plus bas dans chaque intervalle pour le pouce (en mm) :")
+for i in range(len(min_peak_times)):
+    print("Pic le plus bas", i+1, "- Temps :", min_peak_times[i], "s, COP :", min_peak_values[i], "mm")
+
+
+
+
+
+
+
+
+
 
 
 # Plot COP x and COP y positions
