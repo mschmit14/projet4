@@ -16,7 +16,7 @@ df.columns = ['nom','type','gant','force','cond','bloc1', 'bloc2','bloc3', 'bloc
 print(df)
 
 nom = ['Victor', 'Lise', 'Sophie', 'Hugo']
-partie = 1
+partie = 3
 
 if(partie == 1):
     #comparer le up et down de la reproduction lf
@@ -97,7 +97,10 @@ if(partie == 1):
             plt.scatter(xs, val, color='green')
 
         plt.grid()
-        plt.title(n+" load force : reproduction")
+        plt.title(n+" load force : reproduction",fontsize=25)
+        plt.xticks(fontsize=15)
+        plt.yticks(fontsize=20)
+        plt.savefig("fig_1_up_down" + n +".pdf", format="pdf", bbox_inches="tight")
         plt.show()
 
     ##global##
@@ -158,7 +161,10 @@ if(partie == 1):
         plt.scatter(xs, val, color='green')
 
     plt.grid()
-    plt.title("Load force reproduction globale")
+    plt.title("Load force reproduction globale",fontsize=30)
+    plt.xticks(fontsize=15)
+    plt.yticks(fontsize=20)
+    plt.savefig("fig_1_up_down_all" +".pdf", format="pdf", bbox_inches="tight")
     plt.show()
 
     x = [1,2,3,4]
@@ -185,6 +191,7 @@ if(partie == 1):
     plt.ylabel('LF [N]')
     plt.xticks([1, 2, 3, 4], ['Bas avec gant', 'Haut avec gant', 'Bas sans gant', 'Haut avec gant'])
     plt.title("Load force moyenne : reproduction avec et sans gant")
+    plt.savefig("fig_1_all_moyenne" +".pdf", format="pdf", bbox_inches="tight")
     plt.show()
 
 
@@ -541,7 +548,10 @@ elif(partie == 3):
             plt.scatter(xs, val, color='green')
 
         plt.grid()
-        plt.title(n +" load force : reproduction en conditions identiques ou différentes")
+        plt.title(n +" load force : reproduction en conditions identiques ou différentes", fontsize=25)
+        plt.xticks(fontsize=15)
+        plt.yticks(fontsize=20)
+        plt.savefig("fig_3_cond" + n +".pdf", format="pdf", bbox_inches="tight")
         plt.show()
 
     ##global##
@@ -602,7 +612,10 @@ elif(partie == 3):
             plt.scatter(xs, val, color='green')
 
     plt.grid()
-    plt.title("global LF rep conditions ident et diff")
+    plt.title("Load force globale : reproduction en conditions identiques ou différentes",fontsize=25)
+    plt.xticks(fontsize=15)
+    plt.yticks(fontsize=20)
+    plt.savefig("fig_3_all" +".pdf", format="pdf", bbox_inches="tight")
     plt.show()
 
 
@@ -628,8 +641,9 @@ elif(partie == 3):
     plt.legend()
     plt.ylim(3, 9)
     plt.ylabel('LF [N]')
-    plt.xticks([1, 2, 3, 4], ['down cond ident', 'up cond ident', 'down cond diff', 'up cond diff'])
+    plt.xticks([1, 2, 3, 4], ['Bas cond ident', 'Haut cond ident', 'Bas cond diff', 'Haut cond diff'])
     plt.title("Moyenne LF reproduction conditions ident et diff")
+    plt.savefig("fig_3_all_moyenne" +".pdf", format="pdf", bbox_inches="tight")
     plt.show()
 
 
@@ -737,26 +751,29 @@ elif (partie == 4):
 
 
         #create box plots for the even indexes of the line
-        plt.boxplot(rapport_down_a, positions=[0],labels=['down avec gant'])
+        plt.boxplot(rapport_down_a, positions=[0],labels=['Bas avec gant'])
         for xs,val in zip(xs_down_a, rapport_down_a):
             plt.scatter(xs, val, color='red')
 
         #create box plots for the even indexes of the line
-        plt.boxplot(rapport_down_s, positions=[1],labels=['down sans gant'])
+        plt.boxplot(rapport_down_s, positions=[1],labels=['Bas sans gant'])
         for xs,val in zip(xs_down_s, rapport_down_s):
             plt.scatter(xs, val, color='red')
 
         #create box plots for the odd indexes of the line
-        plt.boxplot(rapport_up_a, positions=[2],labels=['up avec gant'])
+        plt.boxplot(rapport_up_a, positions=[2],labels=['Haut avec gant'])
         for xs,val in zip(xs_up_a, rapport_up_a):
             plt.scatter(xs, val, color='green')
 
         #create box plots for the odd indexes of the line
-        plt.boxplot(rapport_up_s, positions=[3],labels=['up sans gant'])
+        plt.boxplot(rapport_up_s, positions=[3],labels=['Haut sans gant'])
         for xs,val in zip(xs_up_s, rapport_up_s):
             plt.scatter(xs, val, color='green')
 
         plt.grid()
-        plt.title(n +" rapport LF et GF avec et sans gants")
+        plt.title(n +" rapport LF et GF avec et sans gants", fontsize=30)
+        plt.xticks(fontsize=15)
+        plt.yticks(fontsize=20)
+        plt.savefig("fig_4_rapport_et_gant"+ n +".pdf", format="pdf", bbox_inches="tight")
         plt.show()
 
