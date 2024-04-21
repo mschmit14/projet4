@@ -23,7 +23,7 @@ import signal_processing_toolbox as processing
 
 # File path
 data_dir = "./YOUR/DATA/DIRECTORY"
-file_name = "Hugo_friction_gant_block9.txt"
+file_name = "Hugo_friction_final_block29.txt"
 # Import data from txt file
 #df = pd.read_csv(data_dir + file_name, sep = '\t', header = None)
 df = pd.read_csv(file_name, 
@@ -110,6 +110,253 @@ LF  = processing.filter_signal(LF,   fs = freqAcq, fc = freqFiltForces)
 LFv = processing.filter_signal(LFv,  fs = freqAcq, fc = freqFiltForces)
 LFh = processing.filter_signal(LFh,  fs = freqAcq, fc = freqFiltForces)
 
+absLFv = np.abs(LFv) # Absolute value of LFv
+meanLFv = np.mean(absLFv) # Mean value of LFv
+meanLFv = np.ones(len(LFv))*meanLFv # Obtain a vector of the same length as LFv with the mean value of LFv
+
+#%% Friction coefficient
+#Index
+mask_R = np.abs(Fy_R) < 0.2
+mu_R = np.where(mask_R, np.nan, np.sqrt((np.square(Fx_R))+np.square(Fy_R))/np.sqrt((np.square(Fy_R)))) # Friction coefficient from GF to LF
+print('Friction coefficient for the index : ' + str(np.nanmean(mu_R)))
+
+#Thumb
+mask_L = np.abs(Fy_L) < 0.2
+mu_L = np.where(mask_L, np.nan, np.sqrt((np.square(Fx_L)+np.square(Fy_L)))/np.sqrt((np.square(Fy_L)))) # Friction coefficient from GF to LF
+print('Friction coefficient for the thumb : ' + str(np.nanmean(mu_L)))
+
+#%% COP peaks 
+from scipy.signal import find_peaks
+
+#Thumb
+CPx_L_filtered = CPx_L.copy()
+CPx_L_filtered[CPx_L_filtered > 0.02] = np.nan
+CPx_L_filtered[CPx_L_filtered < -0.02] = np.nan
+peaks_L, _ = find_peaks(CPx_L_filtered, distance=1000, height=0.003)  
+npeaks_L, _ = find_peaks(-CPx_L_filtered, distance=1000, height=0.003)  
+
+#Index
+CPx_R_filtered = CPx_R.copy()
+CPx_R_filtered[CPx_R_filtered > 0.02] = np.nan
+CPx_R_filtered[CPx_R_filtered < -0.02] = np.nan
+peaks_R, _ = find_peaks(CPx_R_filtered, distance=1000, prominence=0.01, height=0.003)  
+npeaks_R, _ = find_peaks(-CPx_R_filtered, distance=1000, prominence=0.01, height=0.003)  
+
+#%% useful zone
+upper_threshold = 0.003
+lower_threshold = -0.003
+
+from scipy.signal import find_peaks
+
+# Thumb
+# Find the indices of the useful zones
+useful_zone_indices_upper_L = np.where(CPx_L_filtered < upper_threshold)[0]
+useful_zone_indices_lower_L = np.where(CPx_L_filtered > lower_threshold)[0]
+
+# Create subsets of mu_L for each useful zone
+mu_L_upper_zone = mu_L[useful_zone_indices_upper_L]
+mu_L_lower_zone = mu_L[useful_zone_indices_lower_L]
+
+# Find the peaks in each useful zone
+peaks_upper_zone_L, _ = find_peaks(mu_L_upper_zone, distance=500, prominence=0.01)
+peaks_lower_zone_L, _ = find_peaks(mu_L_lower_zone, distance=500, prominence=0.01)
+
+# Convert the peak indices back to the original indices
+peaks_upper_zone_L = useful_zone_indices_upper_L[peaks_upper_zone_L]
+peaks_lower_zone_L = useful_zone_indices_lower_L[peaks_lower_zone_L]
+
+# Index
+# Find the indices of the useful zones
+useful_zone_indices_upper_R = np.where(CPx_R_filtered < upper_threshold)[0]
+useful_zone_indices_lower_R = np.where(CPx_R_filtered > lower_threshold)[0]
+
+# Create subsets of mu_R for each useful zone
+mu_R_upper_zone = mu_R[useful_zone_indices_upper_R]
+mu_R_lower_zone = mu_R[useful_zone_indices_lower_R]
+
+# Find the peaks in each useful zone
+peaks_upper_zone_R, _ = find_peaks(mu_R_upper_zone, distance=500, prominence=0.01)
+peaks_lower_zone_R, _ = find_peaks(mu_R_lower_zone, distance=500, prominence=0.01)
+
+# Convert the peak indices back to the original indices
+peaks_upper_zone_R = useful_zone_indices_upper_R[peaks_upper_zone_R]
+peaks_lower_zone_R = useful_zone_indices_lower_R[peaks_lower_zone_R]
+
+# Combine peaks_upper_zone and peaks_lower_zone into a single array
+sum_peaks_L = np.concatenate((peaks_upper_zone_L, peaks_lower_zone_L))
+
+# Combine peaks_upper_zone and peaks_lower_zone into a single array
+sum_peaks_R = np.concatenate((peaks_upper_zone_R, peaks_lower_zone_R))
+
+fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1, figsize=(10, 10))
+
+# Plot the mu_R friction coefficient on the first subplot
+ax1.plot(time, mu_R, label='mu_R')
+ax1.set_ylabel('mu_R')
+ax1.plot(peaks_upper_zone_R/1000, mu_R[peaks_upper_zone_R], "x", label='Peaks in upper zone')
+ax1.plot(peaks_lower_zone_R/1000, mu_R[peaks_lower_zone_R], "x", label='Peaks in lower zone')
+ax1.set_xlim([0, 35])  # Limit the x-axis between 0 and 35
+ax1.legend()
+
+# Plot the mu_L friction coefficient on the second subplot
+ax2.plot(time, mu_L, label='mu_L')
+ax2.plot(peaks_upper_zone_L/1000, mu_L[peaks_upper_zone_L], "x", label='Peaks in upper zone')
+ax2.plot(peaks_lower_zone_L/1000, mu_L[peaks_lower_zone_L], "x", label='Peaks in lower zone')
+ax2.set_ylabel('mu_L')
+ax2.set_xlim([0, 35])  # Limit the x-axis between 0 and 35
+ax2.legend()
+
+# Plot the CPx_L data and the peaks on the third subplot
+ax3.plot(np.arange(len(CPx_L_filtered))/1000, CPx_L_filtered, label='CPx_L')
+ax3.plot(peaks_L/1000, CPx_L_filtered[peaks_L], "x", label='Positive peaks')
+ax3.plot(npeaks_L/1000, CPx_L_filtered[npeaks_L], "x", label='Negative peaks')
+ax3.set_xlim([0, 35])  # Limit the x-axis between 0 and 35
+ax3.set_ylim([-0.03, 0.03])  # Limit the y-axis between -0.02 and 0.02
+ax3.axhline(y=upper_threshold, color='r', linestyle='--', label='Upper Threshold')  # Add the upper threshold line
+ax3.axhline(y=lower_threshold, color='b', linestyle='--', label='Lower Threshold')  # Add the lower threshold line
+ax3.set_xlabel('Time [s]')
+ax3.set_ylabel('CPx_L')
+ax3.legend()
+
+# Plot the CPx_R data and the peaks on the fourth subplot
+ax4.plot(np.arange(len(CPx_R_filtered))/1000, CPx_R_filtered, label='CPx_R')
+ax4.plot(peaks_R/1000, CPx_R_filtered[peaks_R], "x", label='Positive peaks')
+ax4.plot(npeaks_R/1000, CPx_R_filtered[npeaks_R], "x", label='Negative peaks')
+ax4.set_xlim([0, 35])  # Limit the x-axis between 0 and 35
+ax4.set_ylim([-0.03, 0.03])  # Limit the y-axis between -0.02 and 0.02
+ax4.axhline(y=upper_threshold, color='r', linestyle='--', label='Upper Threshold')  # Add the upper threshold line
+ax4.axhline(y=lower_threshold, color='b', linestyle='--', label='Lower Threshold')  # Add the lower threshold line
+ax4.set_xlabel('Time [s]')
+ax4.set_ylabel('CPx_R')
+ax4.legend()
+
+plt.tight_layout()
+plt.show()
+plt.close()
+
+#%% CF
+from sklearn.linear_model import LinearRegression
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Create a new figure for the Fx_L and Fx_R vs peaks plot
+fig, axs = plt.subplots(2, figsize=(10, 16))
+
+# For Left
+# Give the y of every peak
+CF_L = mu_L[sum_peaks_L]
+NF_L = np.sqrt((np.square(Fx_L[sum_peaks_L])))
+
+# Replace NaN values in CF with the mean of the non-NaN elements
+CF_L = np.where(np.isnan(CF_L), np.nanmean(CF_L), CF_L)
+
+# Convert CF and NF to logarithmic scale
+log_CF_L = np.log(CF_L)
+log_NF_L = np.log(NF_L)
+
+# Reshape log_NF to be a 2D array
+log_NF_L = log_NF_L.reshape(-1, 1)
+
+# Fit the linear regression model
+model_L = LinearRegression().fit(log_NF_L, log_CF_L)
+
+# The coefficient 'n' is the slope of the regression line
+n_L = model_L.coef_[0]
+
+# The intercept 'log(k)' is the y-intercept of the regression line
+log_k_L = model_L.intercept_
+
+# Convert 'log(k)' back to 'k'
+k_L = np.exp(log_k_L)
+
+print(f"Left: k: {k_L}, n: {n_L}")
+
+# Plot Fx_L values at the peaks in the upper zone
+axs[0].scatter(NF_L, CF_L, marker="x", label='Actual CF')
+
+# Calculate CF using the formula
+calculated_CF_L = k_L * (np.linspace(0.1, 10) ** n_L)
+
+# Plot the calculated CF values
+axs[0].plot(np.linspace(0.1, 10), calculated_CF_L, color='red', label='Calculated CF')
+
+axs[0].set_xlabel('NF')
+axs[0].set_ylabel('CF')
+axs[0].legend()
+axs[0].set_title('Left')
+
+# For Right
+# Give the y of every peak
+CF_R = mu_R[sum_peaks_R]
+NF_R = np.sqrt((np.square(Fx_R[sum_peaks_R])))
+
+# Replace NaN values in CF with the mean of the non-NaN elements
+CF_R = np.where(np.isnan(CF_R), np.nanmean(CF_R), CF_R)
+
+# Convert CF and NF to logarithmic scale
+log_CF_R = np.log(CF_R)
+log_NF_R = np.log(NF_R)
+
+# Reshape log_NF to be a 2D array
+log_NF_R = log_NF_R.reshape(-1, 1)
+
+# Fit the linear regression model
+model_R = LinearRegression().fit(log_NF_R, log_CF_R)
+
+# The coefficient 'n' is the slope of the regression line
+n_R = model_R.coef_[0]
+
+# The intercept 'log(k)' is the y-intercept of the regression line
+log_k_R = model_R.intercept_
+
+# Convert 'log(k)' back to 'k'
+k_R = np.exp(log_k_R)
+
+print(f"Right: k: {k_R}, n: {n_R}")
+
+# Plot Fx_R values at the peaks in the upper zone
+axs[1].scatter(NF_R, CF_R, marker="x", label='Actual CF')
+
+# Calculate CF using the formula
+calculated_CF_R = k_R * (np.linspace(0.1, 10) ** n_R)
+
+# Plot the calculated CF values
+axs[1].plot(np.linspace(0.1, 10), calculated_CF_R, color='red', label='Calculated CF')
+
+axs[1].set_xlabel('NF')
+axs[1].set_ylabel('CF')
+axs[1].legend()
+axs[1].set_title('Right')
+
+plt.tight_layout()
+plt.show()
+plt.close()
+
+#%% Export data
+import os 
+
+
+#%% Moyenne glissante
+window_size = 3 * freqAcq #3000
+window = np.ones(window_size)/window_size
+LFv_smooth = np.convolve(absLFv, window, 'same')
+
+#%%
+# Trouver les indices des points d'intersection entre LFv_smooth et meanLFv
+intersection_indices = np.where(np.diff(np.sign(LFv_smooth - absLFv)))[0]
+
+# Définir la taille de la fenêtre pour la moyenne glissante autour des points d'intersection
+window_size_intersection = 100  # Vous devrez ajuster cela en fonction de vos besoins
+
+# Initialiser une liste pour stocker les valeurs de moyenne glissante autour des points d'intersection
+smoothed_intersection_values = []
+
+# Calculer la moyenne glissante autour de chaque point d'intersection
+for index in intersection_indices:
+    start_index = max(0, index - window_size_intersection // 2)
+    end_index = min(len(LFv_smooth), index + window_size_intersection // 2)
+    smoothed_value = np.mean(LFv_smooth[start_index:end_index])
+    smoothed_intersection_values.append(smoothed_value)
 
 #%% LF derivative
 dLFv = processing.derive(LFv, 1000)
@@ -219,191 +466,11 @@ ax[3].set_ylabel("COP [mm]", fontsize=12)
 ax[3].legend(fontsize=12)
 ax[3].set_ylim([-20,20])
 ax[3].set_xlabel("Time [s]", fontsize=13)
-
-
-#Threshold suffisamment élevé pour que l'on considère qu'il y ait un glissement
-ax[3].axhline(y=2.5, color='b',linestyle='--', linewidth=1) 
-ax[3].axhline(y=-2.5, color='b',linestyle='--', linewidth=1) 
-
-#Calcul des pics (extremums) pour l'index:
-from scipy.signal import find_peaks
-
-# Définition de la longueur de l'intervalle
-interval_length = 2.16  # en secondes
-
-# Initialisation du temps de début de l'intervalle
-interval_start_time = 0
-
-# Initialisation des variables pour suivre les pics les plus élevés et les plus bas
-max_peak_value = -float('inf')
-min_peak_value = float('inf')
-
-# Initialisation des listes pour stocker les temps et valeurs correspondant aux pics les plus élevés et les plus bas
-max_peak_times = []
-max_peak_values = []
-min_peak_times = []
-min_peak_values = []
-
-# Boucle pour chaque intervalle jusqu'à 40 secondes
-while interval_start_time < 40:
-    # Calcul du temps de fin de l'intervalle
-    interval_end_time = interval_start_time + interval_length
-    
-    # Sélection des indices correspondant à l'intervalle de temps actuel
-    interval_indices = np.where((time >= interval_start_time) & (time < interval_end_time))[0]
-    
-    # Extraction des données de COP pour l'index dans l'intervalle de temps actuel
-    interval_time = time[interval_indices]
-    interval_COP_index = CPx_L[interval_indices]
-    
-    # Recherche des pics dans l'intervalle de temps actuel
-    peaks_index, _ = find_peaks(interval_COP_index)
-    
-    # Si des pics sont trouvés dans l'intervalle
-    if len(peaks_index) > 0:
-        # Trouver la valeur la plus élevée parmi les pics dans l'intervalle
-        max_peak_idx = np.argmax(interval_COP_index[peaks_index])
-        max_peak_time = interval_time[peaks_index[max_peak_idx]]
-        max_peak_value = interval_COP_index[peaks_index[max_peak_idx]] * 1000  # Conversion en millimètres
-        
-        # Si cette valeur est plus élevée que la valeur précédente, la mettre à jour
-        if max_peak_value > min_peak_value:
-            max_peak_times.append(max_peak_time)
-            max_peak_values.append(max_peak_value)
-            min_peak_value = max_peak_value
-    
-    # Si des pics négatifs sont trouvés dans l'intervalle
-    if len(peaks_index) > 0:
-        # Trouver la valeur la plus basse parmi les pics négatifs dans l'intervalle
-        min_peak_idx = np.argmin(interval_COP_index[peaks_index])
-        min_peak_time = interval_time[peaks_index[min_peak_idx]]
-        min_peak_value = interval_COP_index[peaks_index[min_peak_idx]] * 1000  # Conversion en millimètres
-        
-        # Si cette valeur est plus basse que la valeur précédente, la mettre à jour
-        if min_peak_value < max_peak_value:
-            min_peak_times.append(min_peak_time)
-            min_peak_values.append(min_peak_value)
-            max_peak_value = min_peak_value
-
-    # Mise à jour du temps de début pour le prochain intervalle
-    interval_start_time += interval_length
-
-# Affichage des valeurs des pics les plus élevés et les plus bas dans chaque intervalle
-print("Valeurs des pics les plus élevés dans chaque intervalle pour l'index (en mm):")
-for i in range(len(max_peak_times)):
-    print("Pic le plus élevé", i+1, "- Temps :", max_peak_times[i], "s, COP :", max_peak_values[i], "mm")
-
-print("\nValeurs des pics les plus bas dans chaque intervalle pour l'index (en mm):")
-for i in range(len(min_peak_times)):
-    print("Pic le plus bas", i+1, "- Temps :", min_peak_times[i], "s, COP :", min_peak_values[i], "mm")
-
-#Calcul des pics (extremums) pour le thumb:
-from scipy.signal import find_peaks
-
-# Définition de la longueur de l'intervalle
-interval_length = 2.16  # en secondes
-
-# Initialisation du temps de début de l'intervalle
-interval_start_time = 0
-
-# Initialisation des variables pour suivre les pics les plus élevés et les plus bas
-max_peak_value = -float('inf')
-min_peak_value = float('inf')
-
-# Initialisation des listes pour stocker les temps et valeurs correspondant aux pics les plus élevés et les plus bas
-max_peak_times = []
-max_peak_values = []
-min_peak_times = []
-min_peak_values = []
-
-# Boucle pour chaque intervalle jusqu'à 40 secondes
-while interval_start_time < 40:
-    # Calcul du temps de fin de l'intervalle
-    interval_end_time = interval_start_time + interval_length
-    
-    # Sélection des indices correspondant à l'intervalle de temps actuel
-    interval_indices = np.where((time >= interval_start_time) & (time < interval_end_time))[0]
-    
-    # Extraction des données de COP pour le pouce dans l'intervalle de temps actuel
-    interval_time = time[interval_indices]
-    interval_COP_thumb = CPx_R[interval_indices]  # CPx_R pour le pouce
-    
-    # Recherche des pics dans l'intervalle de temps actuel
-    peaks_index, _ = find_peaks(interval_COP_thumb)
-    
-    # Si des pics sont trouvés dans l'intervalle
-    if len(peaks_index) > 0:
-        # Trouver la valeur la plus élevée parmi les pics dans l'intervalle
-        max_peak_idx = np.argmax(interval_COP_thumb[peaks_index])
-        max_peak_time = interval_time[peaks_index[max_peak_idx]]
-        max_peak_value = interval_COP_thumb[peaks_index[max_peak_idx]] * 1000  # Conversion en millimètres
-        
-        # Si cette valeur est plus élevée que la valeur précédente, la mettre à jour
-        if max_peak_value > min_peak_value:
-            max_peak_times.append(max_peak_time)
-            max_peak_values.append(max_peak_value)
-            min_peak_value = max_peak_value
-    
-    # Si des pics négatifs sont trouvés dans l'intervalle
-    if len(peaks_index) > 0:
-        # Trouver la valeur la plus basse parmi les pics négatifs dans l'intervalle
-        min_peak_idx = np.argmin(interval_COP_thumb[peaks_index])
-        min_peak_time = interval_time[peaks_index[min_peak_idx]]
-        min_peak_value = interval_COP_thumb[peaks_index[min_peak_idx]] * 1000  # Conversion en millimètres
-        
-        # Si cette valeur est plus basse que la valeur précédente, la mettre à jour
-        if min_peak_value < max_peak_value:
-            min_peak_times.append(min_peak_time)
-            min_peak_values.append(min_peak_value)
-            max_peak_value = min_peak_value
-
-    # Mise à jour du temps de début pour le prochain intervalle
-    interval_start_time += interval_length
-
-# Affichage des valeurs des pics les plus élevés et les plus bas dans chaque intervalle
-print("\nValeurs des pics les plus élevés dans chaque intervalle pour le pouce (en mm) :")
-for i in range(len(max_peak_times)):
-    print("Pic le plus élevé", i+1, "- Temps :", max_peak_times[i], "s, COP :", max_peak_values[i], "mm")
-
-print("\nValeurs des pics les plus bas dans chaque intervalle pour le pouce (en mm) :")
-for i in range(len(min_peak_times)):
-    print("Pic le plus bas", i+1, "- Temps :", min_peak_times[i], "s, COP :", min_peak_values[i], "mm")
-
-
-
-
-
-
-
-
-
-
-
-# Plot COP x and COP y positions
-plt.figure(figsize=[8, 8])
-plt.scatter(CPx_L*1000, CPz_L*1000, label="Index Finger COP", alpha=0.5)
-plt.scatter(CPx_R*1000, CPz_R*1000, label="Thumb COP", alpha=0.5)
-plt.xlabel('COP x Position [mm]', fontsize=12)
-plt.ylabel('COP y Position [mm]', fontsize=12)
-plt.title('COP Position', fontsize=14)
-plt.legend()
-plt.grid(True)
-plt.gca().set_aspect('equal', adjustable='box')  # Equal aspect ratio
-plt.show()
-
-# Calculate static friction coefficient
-CF_static = LF / GF
-
-# Plot static friction coefficient
-plt.figure(figsize=[10, 6])
-plt.plot(time, CF_static, color='b', label='Static Friction Coefficient')
-plt.xlabel('Time [s]', fontsize=12)
-plt.ylabel('Static Friction Coefficient', fontsize=12)
-plt.title('Static Friction Coefficient Over Time', fontsize=14)
-plt.legend()
-plt.grid(True)
-plt.show()
-
+##########################################################################################
+##########################################################################################
+##########################################################################################
+##########################################################################################
+##########################################################################################
 
 
 plt.show()
