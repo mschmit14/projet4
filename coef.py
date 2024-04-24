@@ -122,6 +122,22 @@ for name in liste :
 
     # Load Force (LF) and Grip Force (GF)
     GF  = 0.5*(abs(Fy_L) + abs(Fy_R))  # GF is defined as the average of the left and right normal forces
+    # sum = 0
+    # count = 0
+    # for i in range(len(GF)):
+    #     if GF[i] < 0.1:
+    #         sum+=1
+    #         # print("GF < 0.1 : " + str(GF[i]))
+    # GF_new = np.ndarray(len(GF)-sum)
+    # print("sum = " + str(sum)) #4376 ; 1450 ; 2998
+    # for i in range(len(GF)):
+    #     if GF[i] < 0.1:
+    #         sum+=1
+    #         # print("GF < 0.1 : " + str(GF[i]))
+    #     else :
+    #         GF_new[count] = GF[i]
+    #         count+=1
+    # print(len(GF_new))
     LFv = Fx_L + Fx_R                  # Vertical component of LF
     LFh = Fz_L + Fz_R                  # Horizontal component of LF
     LF  = np.hypot(LFv,LFh)            # LF norm
@@ -145,7 +161,6 @@ for name in liste :
     LFv = processing.filter_signal(LFv,  fs = freqAcq, fc = freqFiltForces)
     LFh = processing.filter_signal(LFh,  fs = freqAcq, fc = freqFiltForces)
 
-
     #%% LF derivative
     dLFv = processing.derive(LFv, 1000)
 
@@ -163,12 +178,44 @@ for name in liste :
     #%% Friction coefficient
     #Index
     mask_R = np.abs(Fy_R) < 0.2
-    mu_R = np.where(mask_R, np.nan, np.sqrt((np.square(Fx_R))+np.square(Fz_R))/np.sqrt((np.square(Fy_R)))) # Friction coefficient from GF to LF
+    # print("len de fy_R" +str(len(Fy_R)))
+
+    sum = 0
+    # print(Fy_R)
+    for i in range(len(Fy_R)):
+        if abs(Fy_R[i]) < 0.05:
+            sum+=1
+            # print("Fy_R < 0.1 : " + str(Fy_R[i]))
+    # print("sum = " + str(sum)) #4376 ; 1450 ; 2998
+    new_Fy_R= np.ndarray(len(Fy_R-sum))
+
+    cnt = 0
+    for i in range(len(Fy_R)):
+        if abs(Fy_R[i]) > 0.05:
+            new_Fy_R[cnt] = Fy_R[i]
+            cnt+=1
+
+    sum2 = 0
+    # print(Fy_L)
+    for i in range(len(Fy_L)):
+        if abs(Fy_L[i]) < 0.04:
+            sum2+=1
+            # print("Fy_R < 0.1 : " + str(Fy_R[i]))
+    # print("sum2 = " + str(sum2)) #4376 ; 1450 ; 2998
+    new_Fy_L= np.ndarray(len(Fy_L-sum2))
+
+    cnt2 = 0
+    for i in range(len(Fy_L)):
+        if abs(Fy_L[i]) > 0.04:
+            new_Fy_L[cnt2] = Fy_L[i]
+            cnt2+=1
+
+    mu_R = np.where(mask_R, np.nan, np.sqrt((np.square(Fx_R))+np.square(Fz_R))/np.sqrt((np.square(new_Fy_R)))) # Friction coefficient from GF to LF
     print('Friction coefficient for the index : ' + str(np.nanmean(mu_R)))
 
     #Thumb
     mask_L = np.abs(Fy_L) < 0.2
-    mu_L = np.where(mask_L, np.nan, np.sqrt((np.square(Fx_L)+np.square(Fz_L)))/np.sqrt((np.square(Fy_L)))) # Friction coefficient from GF to LF
+    mu_L = np.where(mask_L, np.nan, np.sqrt((np.square(Fx_L)+np.square(Fz_L)))/np.sqrt((np.square(new_Fy_L)))) # Friction coefficient from GF to LF
     print('Friction coefficient for the thumb : ' + str(np.nanmean(mu_L)))
 
     #%% COP peaks 
