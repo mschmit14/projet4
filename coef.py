@@ -163,12 +163,12 @@ for name in liste :
     #%% Friction coefficient
     #Index
     mask_R = np.abs(Fy_R) < 0.2
-    mu_R = np.where(mask_R, np.nan, np.sqrt((np.square(Fx_R))+np.square(Fy_R))/np.sqrt((np.square(Fy_R)))) # Friction coefficient from GF to LF
+    mu_R = np.where(mask_R, np.nan, np.sqrt((np.square(Fx_R))+np.square(Fz_R))/np.sqrt((np.square(Fy_R)))) # Friction coefficient from GF to LF
     print('Friction coefficient for the index : ' + str(np.nanmean(mu_R)))
 
     #Thumb
     mask_L = np.abs(Fy_L) < 0.2
-    mu_L = np.where(mask_L, np.nan, np.sqrt((np.square(Fx_L)+np.square(Fy_L)))/np.sqrt((np.square(Fy_L)))) # Friction coefficient from GF to LF
+    mu_L = np.where(mask_L, np.nan, np.sqrt((np.square(Fx_L)+np.square(Fz_L)))/np.sqrt((np.square(Fy_L)))) # Friction coefficient from GF to LF
     print('Friction coefficient for the thumb : ' + str(np.nanmean(mu_L)))
 
     #%% COP peaks 
