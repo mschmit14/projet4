@@ -49,7 +49,7 @@ hugo_avec_debut = ["Hugo_friction_gant_block8.txt","Hugo_friction_gant_block9.tx
 hugo_avec_fin = ["Hugo_friction_gant_final_block30.txt","Hugo_friction_gant_final_block31.txt","Hugo_friction_gant_final_block32.txt"]
 
 
-liste = victor_sans_debut
+liste = hugo_avec_debut
 
 
 log_CF_L_tot = []
@@ -120,66 +120,6 @@ for name in liste :
     Ty_L =  T_L[:,2]                                        
     Tz_L = -T_L[:,0]*np.cos(alpha) + T_L[:,1]*np.sin(alpha) 
 
-    # Load Force (LF) and Grip Force (GF)
-    GF  = 0.5*(abs(Fy_L) + abs(Fy_R))  # GF is defined as the average of the left and right normal forces
-    # sum = 0
-    # count = 0
-    # for i in range(len(GF)):
-    #     if GF[i] < 0.1:
-    #         sum+=1
-    #         # print("GF < 0.1 : " + str(GF[i]))
-    # GF_new = np.ndarray(len(GF)-sum)
-    # print("sum = " + str(sum)) #4376 ; 1450 ; 2998
-    # for i in range(len(GF)):
-    #     if GF[i] < 0.1:
-    #         sum+=1
-    #         # print("GF < 0.1 : " + str(GF[i]))
-    #     else :
-    #         GF_new[count] = GF[i]
-    #         count+=1
-    # print(len(GF_new))
-    LFv = Fx_L + Fx_R                  # Vertical component of LF
-    LFh = Fz_L + Fz_R                  # Horizontal component of LF
-    LF  = np.hypot(LFv,LFh)            # LF norm
-
-
-    #%% Compute centers of pressure = point of application of resultant force
-    z0 = 1.55e-3 # Distance between GLM origin and contact surface [m]
-
-    CPx_L =  (Tz_L - Fx_L*z0)/Fy_L
-    CPz_L = -(Tx_L + Fz_L*z0)/Fy_L  
-
-    CPx_R =  (Tz_R + Fx_R*z0)/Fy_R
-    CPz_R = -(Tx_R - Fz_R*z0)/Fy_R 
-        
-
-    #%% Filter data
-    freqFiltForces=20 #Low-pass filter cut-off frequency for force signals (Hz)
-
-    GF  = processing.filter_signal(GF,   fs = freqAcq, fc = freqFiltForces)
-    LF  = processing.filter_signal(LF,   fs = freqAcq, fc = freqFiltForces)
-    LFv = processing.filter_signal(LFv,  fs = freqAcq, fc = freqFiltForces)
-    LFh = processing.filter_signal(LFh,  fs = freqAcq, fc = freqFiltForces)
-
-    #%% LF derivative
-    dLFv = processing.derive(LFv, 1000)
-
-
-    #%% Basic plot of the data
-
-    # Close figures
-    plt.close('all')
-
-    # Initialize new figure
-    fig = plt.figure(figsize = [15,9])
-    ax  = fig.subplots(4, 1, sharex=True)
-
-
-    #%% Friction coefficient
-    #Index
-    mask_R = np.abs(Fy_R) < 0.2
-    # print("len de fy_R" +str(len(Fy_R)))
-
     #Mise d'un treshold pour enlever les valeurs de Fy_R trop faibles
 
     # sum = 0
@@ -221,6 +161,69 @@ for name in liste :
         else :
             new_Fy_L[cnt2] = np.nan
             cnt2+=1
+    
+    
+    # Load Force (LF) and Grip Force (GF)
+    GF  = 0.5*(abs(Fy_L) + abs(Fy_R))  # GF is defined as the average of the left and right normal forces
+    # sum = 0
+    # count = 0
+    # for i in range(len(GF)):
+    #     if GF[i] < 0.1:
+    #         sum+=1
+    #         # print("GF < 0.1 : " + str(GF[i]))
+    # GF_new = np.ndarray(len(GF)-sum)
+    # print("sum = " + str(sum)) #4376 ; 1450 ; 2998
+    # for i in range(len(GF)):
+    #     if GF[i] < 0.1:
+    #         sum+=1
+    #         # print("GF < 0.1 : " + str(GF[i]))
+    #     else :
+    #         GF_new[count] = GF[i]
+    #         count+=1
+    # print(len(GF_new))
+    LFv = Fx_L + Fx_R                  # Vertical component of LF
+    LFh = Fz_L + Fz_R                  # Horizontal component of LF
+    LF  = np.hypot(LFv,LFh)            # LF norm
+
+
+    #%% Compute centers of pressure = point of application of resultant force
+    z0 = 1.55e-3 # Distance between GLM origin and contact surface [m]
+
+    CPx_L =  (Tz_L - Fx_L*z0)/new_Fy_L
+    CPz_L = -(Tx_L + Fz_L*z0)/new_Fy_L  
+
+    CPx_R =  (Tz_R + Fx_R*z0)/new_Fy_R
+    CPz_R = -(Tx_R - Fz_R*z0)/new_Fy_R 
+        
+
+    #%% Filter data
+    freqFiltForces=20 #Low-pass filter cut-off frequency for force signals (Hz)
+
+    GF  = processing.filter_signal(GF,   fs = freqAcq, fc = freqFiltForces)
+    LF  = processing.filter_signal(LF,   fs = freqAcq, fc = freqFiltForces)
+    LFv = processing.filter_signal(LFv,  fs = freqAcq, fc = freqFiltForces)
+    LFh = processing.filter_signal(LFh,  fs = freqAcq, fc = freqFiltForces)
+
+    #%% LF derivative
+    dLFv = processing.derive(LFv, 1000)
+
+
+    #%% Basic plot of the data
+
+    # Close figures
+    plt.close('all')
+
+    # Initialize new figure
+    fig = plt.figure(figsize = [15,9])
+    ax  = fig.subplots(4, 1, sharex=True)
+
+
+    #%% Friction coefficient
+    #Index
+    mask_R = np.abs(Fy_R) < 0.2
+    # print("len de fy_R" +str(len(Fy_R)))
+
+    
 
     # mu_R = np.where(mask_R, np.nan, np.sqrt((np.square(Fx_R))+np.square(Fz_R))/np.sqrt((np.square(new_Fy_R)))) # Friction coefficient from GF to LF
     mu_R = np.sqrt((np.square(Fx_R))+np.square(Fz_R))/np.sqrt((np.square(new_Fy_R)))
