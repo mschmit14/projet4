@@ -180,42 +180,56 @@ for name in liste :
     mask_R = np.abs(Fy_R) < 0.2
     # print("len de fy_R" +str(len(Fy_R)))
 
-    sum = 0
-    # print(Fy_R)
-    for i in range(len(Fy_R)):
-        if abs(Fy_R[i]) < 0.05:
-            sum+=1
-            # print("Fy_R < 0.1 : " + str(Fy_R[i]))
+    #Mise d'un treshold pour enlever les valeurs de Fy_R trop faibles
+
+    # sum = 0
+    # # print(Fy_R)
+    # for i in range(len(Fy_R)):
+    #     if abs(Fy_R[i]) < 0.03:
+    #         sum+=1
+    #         # print("Fy_R < 0.1 : " + str(Fy_R[i]))
     # print("sum = " + str(sum)) #4376 ; 1450 ; 2998
-    new_Fy_R= np.ndarray(len(Fy_R-sum))
+    new_Fy_R= np.ndarray(len(Fy_R))
 
     cnt = 0
     for i in range(len(Fy_R)):
-        if abs(Fy_R[i]) > 0.05:
+        if abs(Fy_R[i]) >= 0.03:
             new_Fy_R[cnt] = Fy_R[i]
             cnt+=1
+        else :
+            new_Fy_R[cnt] = np.nan
+            cnt+=1
 
-    sum2 = 0
-    # print(Fy_L)
-    for i in range(len(Fy_L)):
-        if abs(Fy_L[i]) < 0.04:
-            sum2+=1
-            # print("Fy_R < 0.1 : " + str(Fy_R[i]))
-    # print("sum2 = " + str(sum2)) #4376 ; 1450 ; 2998
-    new_Fy_L= np.ndarray(len(Fy_L-sum2))
+    #Mise d'un treshold pour enlever les valeurs de Fy_L trop faibles
+
+    new_Fy_L= np.ndarray(len(Fy_L))
+
+
+    # sum = 0
+  
+    # for i in range(len(Fy_L)):
+    #     if abs(Fy_L[i]) < 0.01:
+    #         sum+=1
+    #         # print("Fy_L < 0.01 : " + str(Fy_L[i]))
+    # print("sum = " + str(sum)) #4376 ; 1450 ; 2998
 
     cnt2 = 0
     for i in range(len(Fy_L)):
-        if abs(Fy_L[i]) > 0.04:
+        if abs(Fy_L[i]) >= 0.01:
             new_Fy_L[cnt2] = Fy_L[i]
             cnt2+=1
+        else :
+            new_Fy_L[cnt2] = np.nan
+            cnt2+=1
 
-    mu_R = np.where(mask_R, np.nan, np.sqrt((np.square(Fx_R))+np.square(Fz_R))/np.sqrt((np.square(new_Fy_R)))) # Friction coefficient from GF to LF
+    # mu_R = np.where(mask_R, np.nan, np.sqrt((np.square(Fx_R))+np.square(Fz_R))/np.sqrt((np.square(new_Fy_R)))) # Friction coefficient from GF to LF
+    mu_R = np.sqrt((np.square(Fx_R))+np.square(Fz_R))/np.sqrt((np.square(new_Fy_R)))
     print('Friction coefficient for the index : ' + str(np.nanmean(mu_R)))
 
     #Thumb
     mask_L = np.abs(Fy_L) < 0.2
-    mu_L = np.where(mask_L, np.nan, np.sqrt((np.square(Fx_L)+np.square(Fz_L)))/np.sqrt((np.square(new_Fy_L)))) # Friction coefficient from GF to LF
+    # mu_L = np.where(mask_L, np.nan, np.sqrt((np.square(Fx_L)+np.square(Fz_L)))/np.sqrt((np.square(new_Fy_L)))) # Friction coefficient from GF to LF
+    mu_L = np.sqrt((np.square(Fx_L)+np.square(Fz_L)))/np.sqrt((np.square(new_Fy_L)))
     print('Friction coefficient for the thumb : ' + str(np.nanmean(mu_L)))
 
     #%% COP peaks 
@@ -283,49 +297,49 @@ for name in liste :
 
     fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1, figsize=(10, 10))
 
-    # Plot the mu_R friction coefficient on the first subplot
-    ax1.plot(time, mu_R, label='mu_R')
-    ax1.set_ylabel('mu_R')
-    ax1.plot(peaks_upper_zone_R/1000, mu_R[peaks_upper_zone_R], "x", label='Peaks in upper zone')
-    ax1.plot(peaks_lower_zone_R/1000, mu_R[peaks_lower_zone_R], "x", label='Peaks in lower zone')
-    ax1.set_xlim([0, 35])  # Limit the x-axis between 0 and 35
-    ax1.legend()
+    # # Plot the mu_R friction coefficient on the first subplot
+    # ax1.plot(time, mu_R, label='mu_R')
+    # ax1.set_ylabel('mu_R')
+    # ax1.plot(peaks_upper_zone_R/1000, mu_R[peaks_upper_zone_R], "x", label='Peaks in upper zone')
+    # ax1.plot(peaks_lower_zone_R/1000, mu_R[peaks_lower_zone_R], "x", label='Peaks in lower zone')
+    # ax1.set_xlim([0, 35])  # Limit the x-axis between 0 and 35
+    # ax1.legend()
 
-    # Plot the mu_L friction coefficient on the second subplot
-    ax2.plot(time, mu_L, label='mu_L')
-    ax2.plot(peaks_upper_zone_L/1000, mu_L[peaks_upper_zone_L], "x", label='Peaks in upper zone')
-    ax2.plot(peaks_lower_zone_L/1000, mu_L[peaks_lower_zone_L], "x", label='Peaks in lower zone')
-    ax2.set_ylabel('mu_L')
-    ax2.set_xlim([0, 35])  # Limit the x-axis between 0 and 35
-    ax2.legend()
+    # # Plot the mu_L friction coefficient on the second subplot
+    # ax2.plot(time, mu_L, label='mu_L')
+    # ax2.plot(peaks_upper_zone_L/1000, mu_L[peaks_upper_zone_L], "x", label='Peaks in upper zone')
+    # ax2.plot(peaks_lower_zone_L/1000, mu_L[peaks_lower_zone_L], "x", label='Peaks in lower zone')
+    # ax2.set_ylabel('mu_L')
+    # ax2.set_xlim([0, 35])  # Limit the x-axis between 0 and 35
+    # ax2.legend()
 
-    # Plot the CPx_L data and the peaks on the third subplot
-    ax3.plot(np.arange(len(CPx_L_filtered))/1000, CPx_L_filtered, label='CPx_L')
-    ax3.plot(peaks_L/1000, CPx_L_filtered[peaks_L], "x", label='Positive peaks')
-    ax3.plot(npeaks_L/1000, CPx_L_filtered[npeaks_L], "x", label='Negative peaks')
-    ax3.set_xlim([0, 35])  # Limit the x-axis between 0 and 35
-    ax3.set_ylim([-0.03, 0.03])  # Limit the y-axis between -0.02 and 0.02
-    ax3.axhline(y=upper_threshold, color='r', linestyle='--', label='Upper Threshold')  # Add the upper threshold line
-    ax3.axhline(y=lower_threshold, color='b', linestyle='--', label='Lower Threshold')  # Add the lower threshold line
-    ax3.set_xlabel('Time [s]')
-    ax3.set_ylabel('CPx_L')
-    ax3.legend()
+    # # Plot the CPx_L data and the peaks on the third subplot
+    # ax3.plot(np.arange(len(CPx_L_filtered))/1000, CPx_L_filtered, label='CPx_L')
+    # ax3.plot(peaks_L/1000, CPx_L_filtered[peaks_L], "x", label='Positive peaks')
+    # ax3.plot(npeaks_L/1000, CPx_L_filtered[npeaks_L], "x", label='Negative peaks')
+    # ax3.set_xlim([0, 35])  # Limit the x-axis between 0 and 35
+    # ax3.set_ylim([-0.03, 0.03])  # Limit the y-axis between -0.02 and 0.02
+    # ax3.axhline(y=upper_threshold, color='r', linestyle='--', label='Upper Threshold')  # Add the upper threshold line
+    # ax3.axhline(y=lower_threshold, color='b', linestyle='--', label='Lower Threshold')  # Add the lower threshold line
+    # ax3.set_xlabel('Time [s]')
+    # ax3.set_ylabel('CPx_L')
+    # ax3.legend()
 
-    # Plot the CPx_R data and the peaks on the fourth subplot
-    ax4.plot(np.arange(len(CPx_R_filtered))/1000, CPx_R_filtered, label='CPx_R')
-    ax4.plot(peaks_R/1000, CPx_R_filtered[peaks_R], "x", label='Positive peaks')
-    ax4.plot(npeaks_R/1000, CPx_R_filtered[npeaks_R], "x", label='Negative peaks')
-    ax4.set_xlim([0, 35])  # Limit the x-axis between 0 and 35
-    ax4.set_ylim([-0.03, 0.03])  # Limit the y-axis between -0.02 and 0.02
-    ax4.axhline(y=upper_threshold, color='r', linestyle='--', label='Upper Threshold')  # Add the upper threshold line
-    ax4.axhline(y=lower_threshold, color='b', linestyle='--', label='Lower Threshold')  # Add the lower threshold line
-    ax4.set_xlabel('Time [s]')
-    ax4.set_ylabel('CPx_R')
-    ax4.legend()
+    # # Plot the CPx_R data and the peaks on the fourth subplot
+    # ax4.plot(np.arange(len(CPx_R_filtered))/1000, CPx_R_filtered, label='CPx_R')
+    # ax4.plot(peaks_R/1000, CPx_R_filtered[peaks_R], "x", label='Positive peaks')
+    # ax4.plot(npeaks_R/1000, CPx_R_filtered[npeaks_R], "x", label='Negative peaks')
+    # ax4.set_xlim([0, 35])  # Limit the x-axis between 0 and 35
+    # ax4.set_ylim([-0.03, 0.03])  # Limit the y-axis between -0.02 and 0.02
+    # ax4.axhline(y=upper_threshold, color='r', linestyle='--', label='Upper Threshold')  # Add the upper threshold line
+    # ax4.axhline(y=lower_threshold, color='b', linestyle='--', label='Lower Threshold')  # Add the lower threshold line
+    # ax4.set_xlabel('Time [s]')
+    # ax4.set_ylabel('CPx_R')
+    # ax4.legend()
 
-    plt.tight_layout()
-    plt.show()
-    plt.close()
+    # plt.tight_layout()
+    # plt.show()
+    # plt.close()
 
    
 
