@@ -49,7 +49,7 @@ hugo_avec_debut = ["Hugo_friction_gant_block8.txt","Hugo_friction_gant_block9.tx
 hugo_avec_fin = ["Hugo_friction_gant_final_block30.txt","Hugo_friction_gant_final_block31.txt","Hugo_friction_gant_final_block32.txt"]
 
 
-liste = lise_avec_debut
+liste = victor_avec_debut
 
 
 log_CF_L_tot = []
@@ -137,7 +137,7 @@ for name in liste :
 
         cnt = 0
         for i in range(len(Fy_R)):
-            if abs(Fy_R[i]) >= 0.2: #ok pour sophie début : 0.4 (mais une valeur chiante)
+            if abs(Fy_R[i]) >= 0.008: #ok pour sophie (début : 0.2)(fin : 0.06) Hugo (début : 0.04)(fin : 0.02)
                 new_Fy_R[i] = Fy_R[i]
             else :
                 new_Fy_R[i] = np.nan
@@ -159,12 +159,12 @@ for name in liste :
 
         cnt2 = 0
         for i in range(len(Fy_L)):
-            if abs(Fy_L[i]) >= 0.06: #ok pour sophie début : 0.08
-                new_Fy_L[cnt2] = Fy_L[i]
-                cnt2+=1
+            if abs(Fy_L[i]) >= 0.04: #sophie (début : 0.06)(fin : 0.04) Hugo (début : 0.02)(fin : 0.02)
+                new_Fy_L[i] = Fy_L[i]
             else :
-                new_Fy_L[cnt2] = np.nan
+                new_Fy_L[i] = np.nan
                 cnt2+=1
+        print("cnt2 = " + str(cnt2))
 
     elif(count == 1):
 
@@ -181,7 +181,7 @@ for name in liste :
 
         cnt = 0
         for i in range(len(Fy_R)):
-            if abs(Fy_R[i]) >= 0.3: #ok pour sophie début : 0.4 (mais une valeur chiante)
+            if abs(Fy_R[i]) >= 0.3: #ok pour sophie (début : 0.3)(fin : 0.6) Hugo (début : 0.6)(fin : 0.6)
                 new_Fy_R[i] = Fy_R[i]
             else :
                 new_Fy_R[i] = np.nan
@@ -203,12 +203,12 @@ for name in liste :
 
         cnt2 = 0
         for i in range(len(Fy_L)):
-            if abs(Fy_L[i]) >= 0.07: #ok pour sophie début : 0.08
-                new_Fy_L[cnt2] = Fy_L[i]
-                cnt2+=1
+            if abs(Fy_L[i]) >= 0.04: #ok pour sophie début et fin : 0.07 Hugo (début : 0.07)(fin : 0.07)
+                new_Fy_L[i] = Fy_L[i]
             else :
-                new_Fy_L[cnt2] = np.nan
+                new_Fy_L[i] = np.nan
                 cnt2+=1
+        print("cnt2 = " + str(cnt2))
 
     elif(count == 2):
 
@@ -225,7 +225,7 @@ for name in liste :
 
         cnt = 0
         for i in range(len(Fy_R)):
-            if abs(Fy_R[i]) >= 0.4: #ok pour sophie début : 0.4 (mais une valeur chiante)
+            if abs(Fy_R[i]) >= 0.02: #ok pour sophie (début : 0.8)(fin : 1.0) Hugo (début : 1.0)(fin : 0.09)
                 new_Fy_R[i] = Fy_R[i]
             else :
                 new_Fy_R[i] = np.nan
@@ -247,12 +247,12 @@ for name in liste :
 
         cnt2 = 0
         for i in range(len(Fy_L)):
-            if abs(Fy_L[i]) >= 2: #ok pour sophie début : 0.08
-                new_Fy_L[cnt2] = Fy_L[i]
-                cnt2+=1
+            if abs(Fy_L[i]) >= 0.2: #ok pour sophie (début : 0.9)(fin : 1.1) Hugo (début : 1.1)(fin : 0.1)
+                new_Fy_L[i] = Fy_L[i]
             else :
-                new_Fy_L[cnt2] = np.nan
+                new_Fy_L[i] = np.nan
                 cnt2+=1
+        print("cnt2 = " + str(cnt2))
     
     
     # Load Force (LF) and Grip Force (GF)
