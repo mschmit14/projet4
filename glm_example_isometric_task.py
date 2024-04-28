@@ -23,7 +23,7 @@ import signal_processing_toolbox as processing
 
 # File path
 data_dir = "./YOUR/DATA/DIRECTORY"
-file_name = "Hugo_friction_final_block29.txt"
+file_name = "Hugo_friction_block5.txt"
 # Import data from txt file
 #df = pd.read_csv(data_dir + file_name, sep = '\t', header = None)
 df = pd.read_csv(file_name, 
@@ -114,6 +114,11 @@ absLFv = np.abs(LFv) # Absolute value of LFv
 meanLFv = np.mean(absLFv) # Mean value of LFv
 meanLFv = np.ones(len(LFv))*meanLFv # Obtain a vector of the same length as LFv with the mean value of LFv
 
+##########################################################################################
+##########################################################################################
+##########################################################################################
+##########################################################################################
+##########################################################################################
 #%% Friction coefficient
 #Index
 mask_R = np.abs(Fy_R) < 0.2
@@ -164,6 +169,7 @@ peaks_lower_zone_L, _ = find_peaks(mu_L_lower_zone, distance=500, prominence=0.0
 # Convert the peak indices back to the original indices
 peaks_upper_zone_L = useful_zone_indices_upper_L[peaks_upper_zone_L]
 peaks_lower_zone_L = useful_zone_indices_lower_L[peaks_lower_zone_L]
+
 
 # Index
 # Find the indices of the useful zones
@@ -357,7 +363,46 @@ for index in intersection_indices:
     end_index = min(len(LFv_smooth), index + window_size_intersection // 2)
     smoothed_value = np.mean(LFv_smooth[start_index:end_index])
     smoothed_intersection_values.append(smoothed_value)
+##########################################################################################
+##########################################################################################
+##########################################################################################
+##########################################################################################
+from sklearn.linear_model import LinearRegression
+import matplotlib.pyplot as plt
+import numpy as np
 
+# Create a new figure for the Fx vs NF plot
+plt.figure(figsize=(10, 8))
+
+# Plot Fx_L values at the peaks in the upper zone for each intensity
+for intensity, color in zip([0, 1, 2], ['blue', 'green', 'red']):
+    CF = mu_L[sum_peaks_L[intensity]]
+    NF = np.sqrt((np.square(Fx_L[sum_peaks_L[intensity]])))
+    CF = np.where(np.isnan(CF), np.nanmean(CF), CF)
+    log_CF = np.log(CF)
+    log_NF = np.log(NF)
+    log_NF = log_NF.reshape(-1, 1)
+    model = LinearRegression().fit(log_NF, log_CF)
+    n = model.coef_[0]
+    log_k = model.intercept_
+    k = np.exp(log_k)
+    calculated_CF = k * (np.linspace(0.1, 10) ** n)
+    plt.scatter(NF, CF, marker="x", label=f'Actual CF - Intensity {intensity}', color=color)
+    plt.plot(np.linspace(0.1, 10), calculated_CF, color=color, label=f'Calculated CF - Intensity {intensity}')
+
+plt.xlabel('NF')
+plt.ylabel('CF')
+plt.legend()
+plt.title('Combined CF Plot for Different Intensities (Left)')
+plt.show()
+plt.close()
+
+
+##########################################################################################
+##########################################################################################
+##########################################################################################
+##########################################################################################
+##########################################################################################
 #%% LF derivative
 dLFv = processing.derive(LFv, 1000)
 
@@ -466,11 +511,7 @@ ax[3].set_ylabel("COP [mm]", fontsize=12)
 ax[3].legend(fontsize=12)
 ax[3].set_ylim([-20,20])
 ax[3].set_xlabel("Time [s]", fontsize=13)
-##########################################################################################
-##########################################################################################
-##########################################################################################
-##########################################################################################
-##########################################################################################
+
 
 
 plt.show()

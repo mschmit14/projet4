@@ -16,7 +16,7 @@ df.columns = ['nom','type','gant','force','cond','bloc1', 'bloc2','bloc3', 'bloc
 print(df)
 
 nom = ['Victor', 'Lise', 'Sophie', 'Hugo']
-partie = 3
+partie = 1
 
 if(partie == 1):
     #comparer le up et down de la reproduction lf
