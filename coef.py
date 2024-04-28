@@ -28,36 +28,33 @@ from sklearn.linear_model import LinearRegression
 data_dir = "./YOUR/DATA/DIRECTORY"
 #file_name = "Hugo_friction_gant_final_block32.txt"
 
-victor_sans_debut = ["Victor_friction_block61.txt","Victor_friction_block62.txt","Victor_friction_block63.txt"]
-victor_sans_fin = ["Victor_friction_final_block84.txt","Victor_friction_final_block85.txt","Victor_friction_final_block86.txt"]
+victor_sans_debut = ["Victor_friction_block61.txt","Victor_friction_block62.txt","Victor_friction_block63.txt"]  #droit fit un peu mieux   #pris le droit moyenne entre debut et fin
+victor_sans_fin = ["Victor_friction_final_block84.txt","Victor_friction_final_block85.txt","Victor_friction_final_block86.txt"]  #le gauche est dans le mauvais sens
 victor_avec_debut = ["Victor_friction_gant_block64.txt","Victor_friction_gant_block65.txt","Victor_friction_gant_block66.txt"]
 victor_avec_fin = ["Victor_friction_gant_final_block88.txt","Victor_friction_gant_final_block89.txt","Victor_friction_gant_final_block90.txt"]
 
-lise_sans_debut = ["Lise_friction_block33.txt","Lise_friction_block34.txt","Lise_friction_block35.txt"]
-lise_sans_fin = ["Lise_friction_final_block55.txt","Lise_friction_final_block56.txt","Lise_friction_final_block57.txt"]
+lise_sans_debut = ["Lise_friction_block33.txt","Lise_friction_block34.txt","Lise_friction_block35.txt"] #gauche un peu mieux #prix le droit moyenne entre debut et fin
+lise_sans_fin = ["Lise_friction_final_block55.txt","Lise_friction_final_block56.txt","Lise_friction_final_block57.txt"] #droit un peu mieux
 lise_avec_debut = ["Lise_friction_gant_block36.txt","Lise_friction_gant_block37.txt","Lise_friction_gant_block38.txt"]
 lise_avec_fin = ["Lise_friction_gant_final_block58.txt","Lise_friction_gant_final_block59.txt","Lise_friction_gant_final_block60.txt"]
 
-sophie_sans_debut = ["Sophie_friction_block91.txt","Sophie_friction_block92.txt","Sophie_friction_block93.txt"]
-sophie_sans_fin = ["Sophie_friction_final_block113.txt","Sophie_friction_final_block114.txt","Sophie_friction_final_block115.txt"]
+sophie_sans_debut = ["Sophie_friction_block91.txt","Sophie_friction_block92.txt","Sophie_friction_block93.txt"]#gauche à l'envers et droit pas dingue #pris droit moyenne entre debut et fin
+sophie_sans_fin = ["Sophie_friction_final_block113.txt","Sophie_friction_final_block114.txt","Sophie_friction_final_block115.txt"] #droit mieux que le gauche
 sophie_avec_debut = ["Sophie_friction_gant_block94.txt","Sophie_friction_gant_block95.txt","Sophie_friction_gant_block96.txt"]
 sophie_avec_fin = ["Sophie_friction_gant_final_block116.txt","Sophie_friction_gant_final_block117.txt","Sophie_friction_gant_final_block118.txt"]
 
-hugo_sans_debut = ["Hugo_friction_block5.txt","Hugo_friction_block6.txt","Hugo_friction_block7.txt"]
+hugo_sans_debut = ["Hugo_friction_block5.txt","Hugo_friction_block6.txt","Hugo_friction_block7.txt"] #pris le droit moyenne entre debut et fin
 hugo_sans_fin = ["Hugo_friction_final_block27.txt","Hugo_friction_final_block28.txt","Hugo_friction_final_block29.txt"]
 hugo_avec_debut = ["Hugo_friction_gant_block8.txt","Hugo_friction_gant_block9.txt","Hugo_friction_gant_block10.txt"]
 hugo_avec_fin = ["Hugo_friction_gant_final_block30.txt","Hugo_friction_gant_final_block31.txt","Hugo_friction_gant_final_block32.txt"]
 
 
-liste = victor_avec_debut
-
+liste = victor_avec_debut + victor_avec_fin
 
 log_CF_L_tot = []
 log_NF_L_tot = []
 log_CF_R_tot = []
 log_NF_R_tot = []
-
-count = 0
 
 for name in liste : 
     file_name = name 
@@ -122,157 +119,8 @@ for name in liste :
     Ty_L =  T_L[:,2]                                        
     Tz_L = -T_L[:,0]*np.cos(alpha) + T_L[:,1]*np.sin(alpha) 
 
-    if(count == 0):
-
-        #Mise d'un treshold pour enlever les valeurs de Fy_R trop faibles
-
-        # sum = 0
-        # # print(Fy_R)
-        # for i in range(len(Fy_R)):
-        #     if abs(Fy_R[i]) < 0.03:
-        #         sum+=1
-        #         # print("Fy_R < 0.1 : " + str(Fy_R[i]))
-        # print("sum = " + str(sum)) #4376 ; 1450 ; 2998
-        new_Fy_R= np.ndarray(len(Fy_R))
-
-        cnt = 0
-        for i in range(len(Fy_R)):
-            if abs(Fy_R[i]) >= 0.008: #ok pour sophie (début : 0.2)(fin : 0.06) Hugo (début : 0.04)(fin : 0.02)
-                new_Fy_R[i] = Fy_R[i]
-            else :
-                new_Fy_R[i] = np.nan
-                cnt+=1
-        print("cnt = " + str(cnt))
-
-        #Mise d'un treshold pour enlever les valeurs de Fy_L trop faibles
-
-        new_Fy_L= np.ndarray(len(Fy_L))
-
-
-        # sum = 0
-    
-        # for i in range(len(Fy_L)):
-        #     if abs(Fy_L[i]) < 0.01:
-        #         sum+=1
-        #         # print("Fy_L < 0.01 : " + str(Fy_L[i]))
-        # print("sum = " + str(sum)) #4376 ; 1450 ; 2998
-
-        cnt2 = 0
-        for i in range(len(Fy_L)):
-            if abs(Fy_L[i]) >= 0.04: #sophie (début : 0.06)(fin : 0.04) Hugo (début : 0.02)(fin : 0.02)
-                new_Fy_L[i] = Fy_L[i]
-            else :
-                new_Fy_L[i] = np.nan
-                cnt2+=1
-        print("cnt2 = " + str(cnt2))
-
-    elif(count == 1):
-
-        #Mise d'un treshold pour enlever les valeurs de Fy_R trop faibles
-
-        # sum = 0
-        # # print(Fy_R)
-        # for i in range(len(Fy_R)):
-        #     if abs(Fy_R[i]) < 0.03:
-        #         sum+=1
-        #         # print("Fy_R < 0.1 : " + str(Fy_R[i]))
-        # print("sum = " + str(sum)) #4376 ; 1450 ; 2998
-        new_Fy_R= np.ndarray(len(Fy_R))
-
-        cnt = 0
-        for i in range(len(Fy_R)):
-            if abs(Fy_R[i]) >= 0.3: #ok pour sophie (début : 0.3)(fin : 0.6) Hugo (début : 0.6)(fin : 0.6)
-                new_Fy_R[i] = Fy_R[i]
-            else :
-                new_Fy_R[i] = np.nan
-                cnt+=1
-        print("cnt = " + str(cnt))
-
-        #Mise d'un treshold pour enlever les valeurs de Fy_L trop faibles
-
-        new_Fy_L= np.ndarray(len(Fy_L))
-
-
-        # sum = 0
-    
-        # for i in range(len(Fy_L)):
-        #     if abs(Fy_L[i]) < 0.01:
-        #         sum+=1
-        #         # print("Fy_L < 0.01 : " + str(Fy_L[i]))
-        # print("sum = " + str(sum)) #4376 ; 1450 ; 2998
-
-        cnt2 = 0
-        for i in range(len(Fy_L)):
-            if abs(Fy_L[i]) >= 0.04: #ok pour sophie début et fin : 0.07 Hugo (début : 0.07)(fin : 0.07)
-                new_Fy_L[i] = Fy_L[i]
-            else :
-                new_Fy_L[i] = np.nan
-                cnt2+=1
-        print("cnt2 = " + str(cnt2))
-
-    elif(count == 2):
-
-        #Mise d'un treshold pour enlever les valeurs de Fy_R trop faibles
-
-        # sum = 0
-        # # print(Fy_R)
-        # for i in range(len(Fy_R)):
-        #     if abs(Fy_R[i]) < 0.03:
-        #         sum+=1
-        #         # print("Fy_R < 0.1 : " + str(Fy_R[i]))
-        # print("sum = " + str(sum)) #4376 ; 1450 ; 2998
-        new_Fy_R= np.ndarray(len(Fy_R))
-
-        cnt = 0
-        for i in range(len(Fy_R)):
-            if abs(Fy_R[i]) >= 0.02: #ok pour sophie (début : 0.8)(fin : 1.0) Hugo (début : 1.0)(fin : 0.09)
-                new_Fy_R[i] = Fy_R[i]
-            else :
-                new_Fy_R[i] = np.nan
-                cnt+=1
-        print("cnt = " + str(cnt))
-
-        #Mise d'un treshold pour enlever les valeurs de Fy_L trop faibles
-
-        new_Fy_L= np.ndarray(len(Fy_L))
-
-
-        # sum = 0
-    
-        # for i in range(len(Fy_L)):
-        #     if abs(Fy_L[i]) < 0.01:
-        #         sum+=1
-        #         # print("Fy_L < 0.01 : " + str(Fy_L[i]))
-        # print("sum = " + str(sum)) #4376 ; 1450 ; 2998
-
-        cnt2 = 0
-        for i in range(len(Fy_L)):
-            if abs(Fy_L[i]) >= 0.2: #ok pour sophie (début : 0.9)(fin : 1.1) Hugo (début : 1.1)(fin : 0.1)
-                new_Fy_L[i] = Fy_L[i]
-            else :
-                new_Fy_L[i] = np.nan
-                cnt2+=1
-        print("cnt2 = " + str(cnt2))
-    
-    
     # Load Force (LF) and Grip Force (GF)
     GF  = 0.5*(abs(Fy_L) + abs(Fy_R))  # GF is defined as the average of the left and right normal forces
-    # sum = 0
-    # count = 0
-    # for i in range(len(GF)):
-    #     if GF[i] < 0.1:
-    #         sum+=1
-    #         # print("GF < 0.1 : " + str(GF[i]))
-    # GF_new = np.ndarray(len(GF)-sum)
-    # print("sum = " + str(sum)) #4376 ; 1450 ; 2998
-    # for i in range(len(GF)):
-    #     if GF[i] < 0.1:
-    #         sum+=1
-    #         # print("GF < 0.1 : " + str(GF[i]))
-    #     else :
-    #         GF_new[count] = GF[i]
-    #         count+=1
-    # print(len(GF_new))
     LFv = Fx_L + Fx_R                  # Vertical component of LF
     LFh = Fz_L + Fz_R                  # Horizontal component of LF
     LF  = np.hypot(LFv,LFh)            # LF norm
@@ -281,11 +129,11 @@ for name in liste :
     #%% Compute centers of pressure = point of application of resultant force
     z0 = 1.55e-3 # Distance between GLM origin and contact surface [m]
 
-    CPx_L =  (Tz_L - Fx_L*z0)/new_Fy_L
-    CPz_L = -(Tx_L + Fz_L*z0)/new_Fy_L  
+    CPx_L =  (Tz_L - Fx_L*z0)/Fy_L
+    CPz_L = -(Tx_L + Fz_L*z0)/Fy_L  
 
-    CPx_R =  (Tz_R + Fx_R*z0)/new_Fy_R
-    CPz_R = -(Tx_R - Fz_R*z0)/new_Fy_R 
+    CPx_R =  (Tz_R + Fx_R*z0)/Fy_R
+    CPz_R = -(Tx_R - Fz_R*z0)/Fy_R 
         
 
     #%% Filter data
@@ -295,6 +143,7 @@ for name in liste :
     LF  = processing.filter_signal(LF,   fs = freqAcq, fc = freqFiltForces)
     LFv = processing.filter_signal(LFv,  fs = freqAcq, fc = freqFiltForces)
     LFh = processing.filter_signal(LFh,  fs = freqAcq, fc = freqFiltForces)
+
 
     #%% LF derivative
     dLFv = processing.derive(LFv, 1000)
@@ -313,18 +162,12 @@ for name in liste :
     #%% Friction coefficient
     #Index
     mask_R = np.abs(Fy_R) < 0.2
-    # print("len de fy_R" +str(len(Fy_R)))
-
-    
-
-    # mu_R = np.where(mask_R, np.nan, np.sqrt((np.square(Fx_R))+np.square(Fz_R))/np.sqrt((np.square(new_Fy_R)))) # Friction coefficient from GF to LF
-    mu_R = np.sqrt((np.square(Fx_R))+np.square(Fz_R))/np.sqrt((np.square(new_Fy_R)))
+    mu_R = np.where(mask_R, np.nan, np.sqrt((np.square(Fx_R))+np.square(Fz_R))/np.sqrt((np.square(Fy_R)))) # Friction coefficient from GF to LF
     print('Friction coefficient for the index : ' + str(np.nanmean(mu_R)))
 
     #Thumb
     mask_L = np.abs(Fy_L) < 0.2
-    # mu_L = np.where(mask_L, np.nan, np.sqrt((np.square(Fx_L)+np.square(Fz_L)))/np.sqrt((np.square(new_Fy_L)))) # Friction coefficient from GF to LF
-    mu_L = np.sqrt((np.square(Fx_L)+np.square(Fz_L)))/np.sqrt((np.square(new_Fy_L)))
+    mu_L = np.where(mask_L, np.nan, np.sqrt((np.square(Fx_L)+np.square(Fz_L)))/np.sqrt((np.square(Fy_L)))) # Friction coefficient from GF to LF
     print('Friction coefficient for the thumb : ' + str(np.nanmean(mu_L)))
 
     #%% COP peaks 
@@ -468,13 +311,11 @@ for name in liste :
     log_CF_R_tot += list(log_CF_R)	
     log_NF_R_tot += list(log_NF_R)
 
-    count+=1
-
 
 #%% CF
 
 # Create a new figure for the Fx_L and Fx_R vs peaks plot
-fig, axs = plt.subplots(2, figsize=(6, 6))
+fig, axs = plt.subplots(3, figsize=(6, 6))
 
 
 # Reshape log_NF to be a 2D array
@@ -483,11 +324,18 @@ CF_L_tot = np.exp(log_CF_L_tot)
 NF_R_tot = np.exp(log_NF_R_tot)
 CF_R_tot = np.exp(log_CF_R_tot)
 
+log_NF_tot = log_NF_L_tot + log_NF_R_tot
+log_CF_tot = log_CF_L_tot + log_CF_R_tot
+NF_tot = np.exp(log_NF_tot)
+CF_tot = np.exp(log_CF_tot)
+
 
 log_NF_L_tot = np.array(log_NF_L_tot).reshape(-1, 1)
 log_CF_L_tot  = np.array(log_CF_L_tot)
 log_NF_R_tot = np.array(log_NF_R_tot).reshape(-1, 1)
 log_CF_R_tot = np.array(log_CF_R_tot)
+log_NF_tot = np.array(log_NF_tot).reshape(-1, 1)
+log_CF_tot = np.array(log_CF_tot)
 
 
 # Fit the linear regression model
@@ -510,7 +358,9 @@ axs[0].scatter(NF_L_tot, CF_L_tot, marker="x", label='Actual CF')
 # Calculate CF using the formula
 calculated_CF_L = k_L * (np.linspace(0.1, 10) ** n_L)
 
+
 # Plot the calculated CF values
+
 axs[0].plot(np.linspace(0.1, 10), calculated_CF_L, color='red', label='Calculated CF')
 
 axs[0].set_xlabel('NF')
@@ -541,6 +391,7 @@ axs[1].scatter(NF_R_tot, CF_R_tot, marker="x", label='Actual CF')
 calculated_CF_R = k_R * (np.linspace(0.1, 10) ** n_R)
 
 # Plot the calculated CF values
+
 axs[1].plot(np.linspace(0.1, 10), calculated_CF_R, color='red', label='Calculated CF')
 
 axs[1].set_xlabel('NF')
@@ -548,9 +399,62 @@ axs[1].set_ylabel('CF')
 axs[1].legend()
 axs[1].set_title('Right')
 
+
+#moyenne L et R
+model = LinearRegression().fit(log_NF_tot, log_CF_tot)
+n = model.coef_[0]
+log_k = model.intercept_
+k = np.exp(log_k)
+print(f"Total: k: {k}, n: {n}")
+
+axs[2].scatter(NF_tot, CF_tot, marker="x", label='Actual CF')
+
+# Calculate CF using the formula
+calculated_CF= k * (np.linspace(0.1, 10) ** n)
+
+axs[2].plot(np.linspace(0.1, 10), calculated_CF, color='red', label='Calculated CF')
+
+axs[2].set_xlabel('NF')
+axs[2].set_ylabel('CF')
+axs[2].legend()
+axs[2].set_title('Right')
+
+
+
 plt.tight_layout()
 plt.show()
 plt.close()
+
+
+
+plt.plot(log_NF_L_tot, log_CF_L_tot, 'o')
+plt.plot(log_NF_L_tot, model_L.predict(log_NF_L_tot), label='fit')
+plt.legend()
+plt.show()
+plt.close()
+
+plt.plot(log_NF_R_tot, log_CF_R_tot, 'o')
+plt.plot(log_NF_R_tot, model_R.predict(log_NF_R_tot), label='fit')
+plt.legend()
+plt.show()
+plt.close()
+
+
+#pour le coefficient de friction avec gant
+mu_L_sup4 = []
+for i in range (len(NF_L_tot)):
+    if NF_L_tot[i] > 4:
+        mu_L_sup4.append(CF_L_tot[i])
+
+mu_R_sup4 = []
+for i in range (len(NF_R_tot)):
+    if NF_R_tot[i] > 4:
+        mu_R_sup4.append(CF_R_tot[i])
+
+print('mu L : ' + str(np.mean(mu_L_sup4)))
+print('mu R : ' + str(np.mean(mu_R_sup4)))
+print('mu : ' + str(np.mean(mu_R_sup4+mu_L_sup4)))
+
 
 #%% Export data
 import os 
